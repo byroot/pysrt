@@ -2,7 +2,7 @@
 from distutils.core import setup
 
 setup(name='pysrt',
-      version='0.1.2',
+      version='0.1.3',
       author='Jean Boussier',
       author_email='jean.boussier@gmail.com',
       packages=['pysrt'],

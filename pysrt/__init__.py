@@ -76,6 +76,7 @@ try:
 except ImportError:
     from StringIO import StringIO
 
+DEFAULT_EOL = '\n' # TODO: no standard constant / function for that ?
 
 class InvalidItem(Exception):
     pass
@@ -191,6 +192,7 @@ class SubRipItem(object):
     RE_ITEM = r'''(?P<sub_id>\d+)
 (?P<start>\d{2}:\d{2}:\d{2},\d{3}) --> (?P<end>\d{2}:\d{2}:\d{2},\d{3})
 (?P<sub_title>.*)'''
+    ITEM_PATTERN = u'%s\n%s --> %s\n%s\n'
 
     def __init__(self, sub_id=0, start=None, end=None, sub_title=''):
         self.id = int(sub_id)
@@ -199,7 +201,7 @@ class SubRipItem(object):
         self.sub_title = unicode(sub_title)
 
     def __unicode__(self):
-        return u'%s\n%s --> %s\n%s\n\n' % (self.id,
+        return self.ITEM_PATTERN % (self.id,
             self.start, self.end, self.sub_title)
 
     def __cmp__(self, other):
@@ -218,24 +220,33 @@ class SubRipItem(object):
 
     @classmethod
     def from_string(cls, source):
-        match = re.match(cls.RE_ITEM, source, re.MULTILINE)
+        match = re.match(cls.RE_ITEM, source, re.DOTALL)
         if not match:
             raise InvalidItem
-        datas = dict(match.groupdict())
-        datas['start'] = SubRipTime.from_string(datas['start'])
-        datas['end'] = SubRipTime.from_string(datas['end'])
-        return cls(**datas)
+        data = dict(match.groupdict())
+        data['start'] = SubRipTime.from_string(data['start'])
+        data['end'] = SubRipTime.from_string(data['end'])
+        return cls(**data)
 
 
 class SubRipFile(object, UserList):
     """
     SubRip file descriptor.
 
-    Provide a pure Python mapping on all metadatas.
+    Provide a pure Python mapping on all metadata.
     """
 
-    def __init__(self, items=None):
+    def __init__(self, items=None, eol=None):
         UserList.__init__(self, items or [])
+        self._eol = eol
+
+    def _get_eol(self):
+        return self._eol or DEFAULT_EOL
+
+    def _set_eol(self, eol):
+        self._eol = self._eol or eol
+
+    eol = property(_get_eol, _set_eol)
 
     @classmethod
     def open(cls, path='', encoding='utf-8'):
@@ -260,9 +271,14 @@ class SubRipFile(object, UserList):
             else:
                 string_buffer.seek(0)
                 source = unicode(string_buffer.read(), new_file.encoding)
-                new_item = SubRipItem.from_string(source)
-                new_file.append(new_item)
-                string_buffer.truncate(0)
+                if source:
+                    new_item = SubRipItem.from_string(source)
+                    new_file.append(new_item)
+                    string_buffer.truncate(0)
+
+        if hasattr(new_file, 'newlines') and new_file.newlines:
+            new_file.eol = tuple(source_file.newlines)[0]
+
         source_file.close()
         return new_file
 
@@ -286,19 +302,21 @@ class SubRipFile(object, UserList):
         for index, item in enumerate(self):
             self[index].id = index + 1
 
-    def save(self, path=None, encoding=None):
+    def save(self, path=None, encoding=None, eol=None):
         """
-        save([save_path[, encoding]])
+        save([path][, encoding][, eol])
 
         Use init path if no other provided.
         Use init encoding if no other provided.
+        Use init eol if no other provided.
         """
-        self.path = path or self.path
-        self.encoding = encoding or self.encoding
+        path = path or self.path
+        encoding = encoding or self.encoding
+        eol = eol or self.eol
 
-        save_file = open(self.path, 'w+')
+        save_file = open(path, 'w+')
         for item in self:
-            save_file.write(unicode(item).encode(self.encoding))
+            save_file.write(unicode(item).replace('\n', eol).encode(encoding))
         save_file.close()
 
 if __name__ == "__main__":
