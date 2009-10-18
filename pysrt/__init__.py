@@ -229,7 +229,7 @@ class SubRipItem(object):
         return cls(**data)
 
 
-class SubRipFile(object, UserList):
+class SubRipFile(UserList, object):
     """
     SubRip file descriptor.
 
