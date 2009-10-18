@@ -1,13 +1,21 @@
 # -*- coding: utf-8 -*-
 from distutils.core import setup
 
+README = ''
+try:
+    f = open('README')
+    README = f.read()
+    f.close()
+except:
+    pass
+
 setup(name='pysrt',
-      version='0.1.3',
+      version='0.1.4',
       author='Jean Boussier',
       author_email='jean.boussier@gmail.com',
       packages=['pysrt'],
       description = "SubRip (.srt) subtitle parser and writer",
-      long_description=open('README').read(),
+      long_description=README,
       license = "GPLv3",
       platforms = ["Independent"],
       keywords = "SubRip srt subtitle",
