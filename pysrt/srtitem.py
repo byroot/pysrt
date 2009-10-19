@@ -47,7 +47,7 @@ class SubRipItem(object):
         if not match:
             raise InvalidItem
 
-        data = dict(match.group('start'))
+        data = dict(match.groupdict())
         for group in ('start', 'end'):
             data[group] = SubRipTime.from_string(data[group])
         return cls(**data)
