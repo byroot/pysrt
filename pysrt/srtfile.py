@@ -10,6 +10,7 @@ except ImportError:
 
 from srtitem import SubRipItem
 
+
 class SubRipFile(UserList, object):
     """
     SubRip file descriptor.
@@ -67,9 +68,10 @@ class SubRipFile(UserList, object):
     def from_string(cls, source):
         return cls.open(StringIO(source))
 
-    def slice(self, starts_before=None, starts_after=None, ends_before=None, ends_after=None):
+    def slice(self, starts_before=None, starts_after=None, ends_before=None,
+              ends_after=None):
         clone = copy(self)
-        
+
         if starts_before:
             clone.data = (i for i in clone.data if i.start < starts_before)
         if starts_after:
@@ -78,7 +80,7 @@ class SubRipFile(UserList, object):
             clone.data = (i for i in clone.data if i.end < ends_before)
         if ends_after:
             clone.data = (i for i in clone.data if i.end > ends_after)
-        
+
         clone.data = list(clone.data)
         return clone
 
