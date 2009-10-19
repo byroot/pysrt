@@ -98,7 +98,7 @@ class SubRipFile(UserList, object):
     def clean_ids(self):
         self.sort()
         for index, item in enumerate(self):
-            self[index].id = index + 1
+            item.id = index + 1
 
     def save(self, path=None, encoding=None, eol=None):
         """
