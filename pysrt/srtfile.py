@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 from os.path import exists, isfile
 from UserList import UserList
 from itertools import chain
@@ -23,7 +24,7 @@ class SubRipFile(UserList, object):
         self._eol = eol
 
     def _get_eol(self):
-        return self._eol or DEFAULT_EOL
+        return self._eol or os.linesep
 
     def _set_eol(self, eol):
         self._eol = self._eol or eol
@@ -111,8 +112,11 @@ class SubRipFile(UserList, object):
         path = path or self.path
         encoding = encoding or self.encoding
         eol = eol or self.eol
-
+        
         save_file = open(path, 'w+')
         for item in self:
-            save_file.write(unicode(item).replace('\n', eol).encode(encoding))
+            string_repr = unicode(item)
+            if eol != self.eol:
+                string_repr = string_repr.replace(self.eol, eol)
+            save_file.write(string_repr.encode(encoding))
         save_file.close()

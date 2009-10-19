@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
+import os
 import re
 
 from srtexc import InvalidItem
 from srttime import SubRipTime
-
-DEFAULT_EOL = '\n' # TODO: no standard constant / function for that ?
 
 
 class SubRipItem(object):
@@ -12,7 +11,7 @@ class SubRipItem(object):
     RE_ITEM = re.compile(r'''(?P<sub_id>\d+)
 (?P<start>\d{2}:\d{2}:\d{2},\d{3}) --> (?P<end>\d{2}:\d{2}:\d{2},\d{3})
 (?P<sub_title>.*)''', re.DOTALL)
-    ITEM_PATTERN = u'%s\n%s --> %s\n%s\n'
+    ITEM_PATTERN = u'%s\n%s --> %s\n%s\n'.replace('\n', os.linesep)
 
     def __init__(self, sub_id=0, start=None, end=None, sub_title=''):
         self.id = int(sub_id)
