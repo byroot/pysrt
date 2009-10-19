@@ -4,32 +4,30 @@ import re
 
 class TimeItemDescriptor(object):
 
-    def __init__(self, ratio, super_ratio=None):
+    def __init__(self, ratio, super_ratio=0):
         self.ratio = int(ratio)
-        self.super_ratio = int(super_ratio) if super_ratio else None
+        self.super_ratio = int(super_ratio)
+
+    def _get_ordinal(self, instance):
+        if self.super_ratio:
+            return instance.ordinal % self.super_ratio
+        return instance.ordinal
 
     def __get__(self, instance, klass):
         if instance is None:
             raise AttributeError
-        if self.super_ratio:
-            return (instance.ordinal % self.super_ratio) / self.ratio
-        return instance.ordinal / self.ratio
+        return self._get_ordinal(instance) / self.ratio
 
     def __set__(self, instance, value):
-        base_ord = instance.ordinal
-        if self.super_ratio:
-            base_ord %= self.super_ratio
-        current_part = base_ord - instance.ordinal % self.ratio
-        instance.ordinal += value * self.ratio - current_part
+        part = self._get_ordinal(instance) - instance.ordinal % self.ratio
+        instance.ordinal += value * self.ratio - part
 
 
 class SubRipTime(object):
-    STRING_FORMAT = '%02d:%02d:%02d,%03d'
-    RE_TIME = re.compile(r'''(?P<hours>\d{2}):
-                             (?P<minutes>\d{2}):
-                             (?P<seconds>\d{2}),
-                             (?P<micro_seconds>\d{3})''',
-                             re.VERBOSE)
+    TIME_PATTERN = '%02d:%02d:%02d,%03d'
+    TIME_REPR = 'SubRipTime(%d, %d, %d, %d)'
+    RE_TIME = re.compile(r'(?P<hours>\d{2}):(?P<minutes>\d{2}):'
+                         r'(?P<seconds>\d{2}),(?P<micro_seconds>\d{3})')
     SECONDS_RATIO = 1000
     MINUTES_RATIO = SECONDS_RATIO * 60
     HOURS_RATIO = MINUTES_RATIO * 60
@@ -50,9 +48,14 @@ class SubRipTime(object):
                      + seconds * self.SECONDS_RATIO \
                      + micro_seconds
 
+    def __repr__(self):
+        return self.TIME_REPR % tuple(self)
+
     def __unicode__(self):
-        return unicode(self.STRING_FORMAT) % (self.hours,
-            self.minutes, self.seconds, self.micro_seconds)
+        return unicode(str(self))
+
+    def __str__(self):
+        return self.TIME_PATTERN % tuple(self)
 
     def __cmp__(self, other):
         return cmp(self.ordinal, self._coerce(other).ordinal)
@@ -73,6 +76,10 @@ class SubRipTime(object):
     def _coerce(cls, other):
         if isinstance(other, SubRipTime):
             return other
+        elif isinstance(other, basestring):
+            return cls.from_string(other)
+        elif isinstance(other, (int, long)):
+            return cls.from_ordinal(other)
         try:
             return cls(**other)
         except TypeError:
@@ -94,13 +101,11 @@ class SubRipTime(object):
 
     @classmethod
     def from_ordinal(cls, ordinal):
-        new_time = cls()
-        new_time.ordinal = int(ordinal)
-        return new_time
+        return cls(micro_seconds=int(ordinal))
 
     @classmethod
     def from_string(cls, source):
-        match = re.match(cls.RE_TIME, source)
+        match = cls.RE_TIME.match(source)
         if not match:
             raise InvalidItem
         items = dict((k, int(v)) for k, v in match.groupdict().items())
