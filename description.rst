@@ -11,9 +11,11 @@ Usage
     subs[42].sub_title = "Never end !"
 
     #equivalent
+    
     part = SubRipFile(i for i in subs if i.end > SubRipTime(0, 0, 40))
     part = SubRipFile(i for i in subs if i.end > (0, 0, 40))
     part = SubRipFile(i for i in subs if i.end > {'seconds': 40})
-
+    part = subs.slice(ends_after={'seconds': 40})  # but better way
+    
     part.shift(seconds=-2)
     subs.save('other/path.srt', 'utf-8')

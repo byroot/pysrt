@@ -1,3 +1,5 @@
 setup.py
 pysrt/__init__.py
-test/test.py
+pysrt/srtfile.py
+pysrt/srtitem.py
+pysrt/srttime.py

@@ -19,7 +19,7 @@ setup(name='pysrt',
       license = "GPLv3",
       platforms = ["Independent"],
       keywords = "SubRip srt subtitle",
-      url = "",
+      url = "http://github.com/byroot/pysrt",
       classifiers = [
           "Development Status :: 4 - Beta",
           "Intended Audience :: Developers",
