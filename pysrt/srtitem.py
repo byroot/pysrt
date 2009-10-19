@@ -12,9 +12,9 @@ class InvalidItem(Exception):
 
 class SubRipItem(object):
 
-    RE_ITEM = r'''(?P<sub_id>\d+)
+    RE_ITEM = re.compile(r'''(?P<sub_id>\d+)
 (?P<start>\d{2}:\d{2}:\d{2},\d{3}) --> (?P<end>\d{2}:\d{2}:\d{2},\d{3})
-(?P<sub_title>.*)'''
+(?P<sub_title>.*)''', re.DOTALL)
     ITEM_PATTERN = u'%s\n%s --> %s\n%s\n'
 
     def __init__(self, sub_id=0, start=None, end=None, sub_title=''):
@@ -43,10 +43,11 @@ class SubRipItem(object):
 
     @classmethod
     def from_string(cls, source):
-        match = re.match(cls.RE_ITEM, source, re.DOTALL)
+        match = cls.RE_ITEM.match(source)
         if not match:
             raise InvalidItem
-        data = dict(match.groupdict())
-        data['start'] = SubRipTime.from_string(data['start'])
-        data['end'] = SubRipTime.from_string(data['end'])
+
+        data = dict(match.group('start'))
+        for group in ('start', 'end'):
+            data[group] = SubRipTime.from_string(data[group])
         return cls(**data)
