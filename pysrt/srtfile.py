@@ -2,6 +2,7 @@
 from os.path import exists, isfile
 from UserList import UserList
 from itertools import chain
+from copy import copy
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -65,6 +66,21 @@ class SubRipFile(UserList, object):
     @classmethod
     def from_string(cls, source):
         return cls.open(StringIO(source))
+
+    def slice(self, starts_before=None, starts_after=None, ends_before=None, ends_after=None):
+        clone = copy(self)
+        
+        if starts_before:
+            clone.data = (i for i in clone.data if i.start < starts_before)
+        if starts_after:
+            clone.data = (i for i in clone.data if i.start > starts_after)
+        if ends_before:
+            clone.data = (i for i in clone.data if i.end < ends_before)
+        if ends_after:
+            clone.data = (i for i in clone.data if i.end > ends_after)
+        
+        clone.data = list(clone.data)
+        return clone
 
     def shift(self, *args, **kwargs):
         """

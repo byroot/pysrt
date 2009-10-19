@@ -35,8 +35,12 @@
 >>> part = SubRipFile(i for i in s if i.end > (0, 0, 40))
 >>> len(part)
 2
+>>> len(s.slice(ends_after=(0, 0, 40)))
+2
 >>> part = SubRipFile(i for i in s if i.end > {'seconds': 40})
 >>> len(part)
+2
+>>> len(s.slice(ends_after={'seconds': 40}))
 2
 >>> part.shift(seconds=-5)
 >>> part[1].start.minutes += 5
