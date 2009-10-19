@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 import re
 
+from srtexc import InvalidItem
 from srttime import SubRipTime
 
 DEFAULT_EOL = '\n' # TODO: no standard constant / function for that ?
-
-
-class InvalidItem(Exception):
-    pass
 
 
 class SubRipItem(object):

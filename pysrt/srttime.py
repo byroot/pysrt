@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import re
 
+from srtexc import InvalidTimeString
+
 
 class TimeItemDescriptor(object):
 
@@ -107,6 +109,6 @@ class SubRipTime(object):
     def from_string(cls, source):
         match = cls.RE_TIME.match(source)
         if not match:
-            raise InvalidItem
+            raise InvalidTimeString
         items = dict((k, int(v)) for k, v in match.groupdict().items())
         return cls(**items)

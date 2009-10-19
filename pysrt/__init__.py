@@ -71,8 +71,9 @@ True
 
 '''
 from srttime import SubRipTime
-from srtitem import SubRipItem, InvalidItem
+from srtitem import SubRipItem
 from srtfile import SubRipFile
+from srtexc import InvalidItem, InvalidTimeString
 
 if __name__ == "__main__":
     import doctest
