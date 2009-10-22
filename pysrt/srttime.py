@@ -5,6 +5,24 @@ from datetime import time
 from srtexc import InvalidTimeString
 
 
+class Comparable(object):
+    """
+    Some builtin types like datetime.time don't use the __cmp__ interface.
+    This class map "rich comparison" methods to __cmp__
+    http://docs.python.org/reference/datamodel.html#object.__ge__
+    """
+
+    def __build_comparator(*values):
+        return lambda self, other: self.__cmp__(other) in values
+
+    __eq__ = __build_comparator(0)
+    __ne__ = __build_comparator(-1, 1)
+    __lt__ = __build_comparator(-1)
+    __le__ = __build_comparator(-1, 0)
+    __gt__ = __build_comparator(1)
+    __ge__ = __build_comparator(0, 1)
+
+
 class TimeItemDescriptor(object):
 
     def __init__(self, ratio, super_ratio=0):
@@ -26,7 +44,7 @@ class TimeItemDescriptor(object):
         instance.ordinal += value * self.ratio - part
 
 
-class SubRipTime(object):
+class SubRipTime(Comparable):
     TIME_PATTERN = '%02d:%02d:%02d,%03d'
     TIME_REPR = 'SubRipTime(%d, %d, %d, %d)'
     RE_TIME = re.compile(r'(?P<hours>\d{2}):(?P<minutes>\d{2}):'
@@ -84,7 +102,7 @@ class SubRipTime(object):
         elif isinstance(other, (int, long)):
             return cls.from_ordinal(other)
         elif isinstance(other, time):
-            return cls.from_time(other, time)
+            return cls.from_time(other)
         try:
             return cls(**other)
         except TypeError:
@@ -123,4 +141,4 @@ class SubRipTime(object):
 
     def to_time(self):
         return time(self.hours, self.minutes, self.seconds,
-                    self.microseconds * 1000)
+                    self.milliseconds * 1000)

@@ -2,6 +2,7 @@
 
 import os
 import sys
+from datetime import time
 
 file_path = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.abspath(file_path))
@@ -85,3 +86,9 @@ class TestCoercing:
         assert dict(hours=4) == SubRipTime(hours=4)
         assert dict(hours=1, minutes=2, seconds=3, milliseconds=4) == \
             SubRipTime(1, 2, 3, 4)
+
+    def test_from_time(self):
+        assert SubRipTime(1, 2, 3, 4) == time(1, 2, 3, 4000)
+        assert SubRipTime(1, 2, 3, 5) >= time(1, 2, 3, 4000)
+        assert SubRipTime(1, 2, 3, 3) <= time(1, 2, 3, 4000)
+        assert SubRipTime(1, 2, 3, 0) != time(1, 2, 3, 4000)
