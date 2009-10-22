@@ -10,4 +10,3 @@ class InvalidTimeString(SubRipError):
 
 class InvalidItem(SubRipError):
     pass
-

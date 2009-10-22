@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
+from datetime import time
 
 from srtexc import InvalidTimeString
 
@@ -82,6 +83,8 @@ class SubRipTime(object):
             return cls.from_string(other)
         elif isinstance(other, (int, long)):
             return cls.from_ordinal(other)
+        elif isinstance(other, time):
+            return cls.from_time(other, time)
         try:
             return cls(**other)
         except TypeError:
@@ -112,3 +115,12 @@ class SubRipTime(object):
             raise InvalidTimeString
         items = dict((k, int(v)) for k, v in match.groupdict().items())
         return cls(**items)
+
+    @classmethod
+    def from_time(cls, time):
+        return cls(hours=time.hour, minutes=time.minute, seconds=time.second,
+                   milliseconds=time.microsecond / 1000)
+
+    def to_time(self):
+        return time(self.hours, self.minutes, self.seconds,
+                    self.microseconds * 1000)
