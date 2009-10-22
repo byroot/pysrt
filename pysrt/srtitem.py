@@ -29,7 +29,7 @@ class SubRipItem(object):
 
     def shift(self, *args, **kwargs):
         """
-        shift(hours, minutes, seconds, micro_seconds)
+        shift(hours, minutes, seconds, milliseconds)
 
         Add given values to start and end attributes.
         All arguments are optional and have a default value of 0.

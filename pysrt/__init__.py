@@ -58,7 +58,7 @@ True
 >>> item.start == (0, 5, 38, 410)
 True
 
->>> t= SubRipTime(micro_seconds=1)
+>>> t= SubRipTime(milliseconds=1)
 >>> t.seconds, t.ordinal
 (0, 1)
 >>> t.seconds += 1

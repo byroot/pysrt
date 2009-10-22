@@ -29,7 +29,7 @@ class SubRipTime(object):
     TIME_PATTERN = '%02d:%02d:%02d,%03d'
     TIME_REPR = 'SubRipTime(%d, %d, %d, %d)'
     RE_TIME = re.compile(r'(?P<hours>\d{2}):(?P<minutes>\d{2}):'
-                         r'(?P<seconds>\d{2}),(?P<micro_seconds>\d{3})')
+                         r'(?P<seconds>\d{2}),(?P<milliseconds>\d{3})')
     SECONDS_RATIO = 1000
     MINUTES_RATIO = SECONDS_RATIO * 60
     HOURS_RATIO = MINUTES_RATIO * 60
@@ -37,18 +37,18 @@ class SubRipTime(object):
     hours = TimeItemDescriptor(HOURS_RATIO)
     minutes = TimeItemDescriptor(MINUTES_RATIO, HOURS_RATIO)
     seconds = TimeItemDescriptor(SECONDS_RATIO, MINUTES_RATIO)
-    micro_seconds = TimeItemDescriptor(1, SECONDS_RATIO)
+    milliseconds = TimeItemDescriptor(1, SECONDS_RATIO)
 
-    def __init__(self, hours=0, minutes=0, seconds=0, micro_seconds=0):
+    def __init__(self, hours=0, minutes=0, seconds=0, milliseconds=0):
         """
-        SubRipTime(hours, minutes, seconds, micro_seconds)
+        SubRipTime(hours, minutes, seconds, milliseconds)
 
         All arguments are optional and have a default value of 0.
         """
         self.ordinal = hours * self.HOURS_RATIO \
                      + minutes * self.MINUTES_RATIO \
                      + seconds * self.SECONDS_RATIO \
-                     + micro_seconds
+                     + milliseconds
 
     def __repr__(self):
         return self.TIME_REPR % tuple(self)
@@ -91,11 +91,11 @@ class SubRipTime(object):
         yield self.hours
         yield self.minutes
         yield self.seconds
-        yield self.micro_seconds
+        yield self.milliseconds
 
     def shift(self, *args, **kwargs):
         """
-        shift(hours, minutes, seconds, micro_seconds)
+        shift(hours, minutes, seconds, milliseconds)
 
         All arguments are optional and have a default value of 0.
         """
@@ -103,7 +103,7 @@ class SubRipTime(object):
 
     @classmethod
     def from_ordinal(cls, ordinal):
-        return cls(micro_seconds=int(ordinal))
+        return cls(milliseconds=int(ordinal))
 
     @classmethod
     def from_string(cls, source):

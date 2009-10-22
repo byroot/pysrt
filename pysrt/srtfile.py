@@ -87,7 +87,7 @@ class SubRipFile(UserList, object):
 
     def shift(self, *args, **kwargs):
         """
-        shift(hours, minutes, seconds, micro_seconds)
+        shift(hours, minutes, seconds, milliseconds)
 
         Add given values to start and end attributes of each items of file
         with given values.
