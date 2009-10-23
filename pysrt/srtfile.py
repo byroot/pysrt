@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 from os.path import exists, isfile
 from UserList import UserList
 from itertools import chain
@@ -9,6 +10,7 @@ try:
 except ImportError:
     from StringIO import StringIO
 
+from srtexc import InvalidItem
 from srtitem import SubRipItem
 
 
@@ -18,6 +20,9 @@ class SubRipFile(UserList, object):
 
     Provide a pure Python mapping on all metadata.
     """
+    ERROR_PASS = 0
+    ERROR_LOG = 1
+    ERROR_RAISE = 2
 
     def __init__(self, items=None, eol=None):
         UserList.__init__(self, items or [])
@@ -32,7 +37,17 @@ class SubRipFile(UserList, object):
     eol = property(_get_eol, _set_eol)
 
     @classmethod
-    def open(cls, path='', encoding='utf-8'):
+    def _handle_error(cls, error, error_handling, path, index):
+        if error_handling == cls.ERROR_RAISE:
+            error.args = (path, index) + error.args
+            raise error
+        if error_handling == cls.ERROR_LOG:
+            sys.stderr.write('PySRT-InvalidItem(%s:%s): \n' % (path, index))
+            sys.stderr.write(error.args[0].encode('ascii', 'ignore'))
+            sys.stderr.write('\n')
+
+    @classmethod
+    def open(cls, path='', encoding='utf-8', error_handling=ERROR_RAISE):
         """
         open([path, [encoding]])
 
@@ -48,15 +63,18 @@ class SubRipFile(UserList, object):
             source_file = path
 
         string_buffer = StringIO()
-        for line in chain(source_file, '\n'):
+        for index, line in enumerate(chain(source_file, '\n')):
             if line.strip():
                 string_buffer.write(line)
             else:
                 string_buffer.seek(0)
                 source = unicode(string_buffer.read(), new_file.encoding)
-                if source:
+                try:
                     new_item = SubRipItem.from_string(source)
                     new_file.append(new_item)
+                except InvalidItem, error:
+                    cls._handle_error(error, error_handling, path, index)
+                finally:
                     string_buffer.truncate(0)
 
         if hasattr(new_file, 'newlines') and new_file.newlines:

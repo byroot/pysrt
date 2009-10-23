@@ -41,7 +41,7 @@ class SubRipItem(object):
     def from_string(cls, source):
         match = cls.RE_ITEM.match(source)
         if not match:
-            raise InvalidItem
+            raise InvalidItem(source)
 
         data = dict(match.groupdict())
         for group in ('start', 'end'):
