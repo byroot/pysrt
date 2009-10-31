@@ -78,7 +78,7 @@ class SubRipFile(UserList, object):
                     cls._handle_error(error, error_handling, path, index)
                 finally:
                     string_buffer.truncate(0)
-        
+
         eol = cls._extract_newline(source_file)
         if eol is not None:
             new_file.eol = eol
@@ -86,11 +86,11 @@ class SubRipFile(UserList, object):
         return new_file
 
     @staticmethod
-    def _extract_newline(file_descriptor):        
+    def _extract_newline(file_descriptor):
         if hasattr(file_descriptor, 'newlines') and file_descriptor.newlines:
             if isinstance(file_descriptor.newlines, basestring):
                 return file_descriptor.newlines
-            else: 
+            else:
                 return file_descriptor.newlines[0]
 
     @classmethod
