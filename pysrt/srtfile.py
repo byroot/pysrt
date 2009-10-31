@@ -38,6 +38,7 @@ class SubRipFile(UserList, object):
 
     @classmethod
     def _handle_error(cls, error, error_handling, path, index):
+        path = os.path.abspath(path)
         if error_handling == cls.ERROR_RAISE:
             error.args = (path, index) + error.args
             raise error
@@ -47,7 +48,8 @@ class SubRipFile(UserList, object):
             sys.stderr.write('\n')
 
     @classmethod
-    def open(cls, path='', encoding='utf-8', error_handling=ERROR_RAISE):
+    def open(cls, path='', encoding='utf-8', error_handling=ERROR_PASS,
+             file_descriptor=None):
         """
         open([path, [encoding]])
 
@@ -57,10 +59,10 @@ class SubRipFile(UserList, object):
         new_file.encoding = encoding
         new_file.path = path
 
-        if isinstance(path, basestring):
+        if file_descriptor is None:
             source_file = open(path, 'rU')
         else:
-            source_file = path
+            source_file = file_descriptor
 
         string_buffer = StringIO()
         for index, line in enumerate(chain(source_file, '\n')):
@@ -85,7 +87,7 @@ class SubRipFile(UserList, object):
 
     @classmethod
     def from_string(cls, source):
-        return cls.open(StringIO(source))
+        return cls.open(file_descriptor=StringIO(source))
 
     def slice(self, starts_before=None, starts_after=None, ends_before=None,
               ends_after=None):
