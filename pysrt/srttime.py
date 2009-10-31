@@ -86,12 +86,14 @@ class SubRipTime(Comparable):
 
     def __iadd__(self, other):
         self.ordinal += self._coerce(other).ordinal
+        return self
 
     def __sub__(self, other):
         return self.from_ordinal(self.ordinal - self._coerce(other).ordinal)
 
     def __isub__(self, other):
         self.ordinal -= self._coerce(other).ordinal
+        return self
 
     @classmethod
     def _coerce(cls, other):
