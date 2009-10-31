@@ -1,4 +1,6 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
+import os
 from distutils.core import setup
 
 README = ''
@@ -10,10 +12,10 @@ except:
     pass
 
 setup(name='pysrt',
-      version='0.1.7',
+      version='0.2.0',
       author='Jean Boussier',
       author_email='jean.boussier@gmail.com',
-      packages=['pysrt'],
+      packages=['pysrt', 'tests'],
       description = "SubRip (.srt) subtitle parser and writer",
       long_description=README,
       license = "GPLv3",
