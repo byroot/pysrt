@@ -53,7 +53,7 @@ class TestShifting(unittest.TestCase):
 
 
 class TestOperators(unittest.TestCase):
-    
+
     def setUp(self):
         self.item = SubRipItem(1, sub_title="Hello world !")
         self.item.shift(minutes=1)

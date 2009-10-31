@@ -115,7 +115,7 @@ class TestCoercing(unittest.TestCase):
 
 
 class TestOperators(unittest.TestCase):
-    
+
     def setUp(self):
         self.time = SubRipTime(1, 2, 3, 4)
 
