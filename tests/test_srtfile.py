@@ -5,6 +5,7 @@ import sys
 from datetime import time
 from itertools import izip
 import unittest
+import random
 from StringIO import StringIO
 
 file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -27,8 +28,9 @@ class TestOpen(unittest.TestCase):
             self.windows_path)
 
     def test_windows1252(self):
-        self.assertEquals(len(SubRipFile.open(self.windows_path,
-            encoding='windows-1252')), 1332)
+        srt_file = SubRipFile.open(self.windows_path, encoding='windows-1252')
+        self.assertEquals(len(srt_file), 1332)
+        self.assertEquals(srt_file.eol, '\r\n')
         self.assertRaises(UnicodeDecodeError, SubRipFile.open,
             self.utf8_path, encoding='ascii')
 
@@ -60,12 +62,20 @@ class TestSerialization(unittest.TestCase):
         self.utf8_path = os.path.join(self.static_path, 'utf-8.srt')
         self.windows_path = os.path.join(self.static_path, 'windows-1252.srt')
         self.invalid_path = os.path.join(self.static_path, 'invalid.srt')
+        self.temp_path = os.path.join(self.static_path, 'temp.srt')
 
     def test_compare_from_string_and_from_path(self):
         iterator = izip(SubRipFile.open(self.utf8_path),
             SubRipFile.from_string(open(self.utf8_path).read()))
         for file_item, string_item in iterator:
             self.assertEquals(unicode(file_item), unicode(string_item))
+
+    def test_save(self):
+        srt_file = SubRipFile.open(self.windows_path, encoding='windows-1252')
+        srt_file.save(self.temp_path, eol='\n', encoding='utf-8')
+        self.assertEquals(open(self.temp_path, 'rb').read(),
+                          open(self.utf8_path, 'rb').read())
+        os.remove(self.temp_path)
 
 
 class TestSlice(unittest.TestCase):
@@ -81,6 +91,14 @@ class TestSlice(unittest.TestCase):
                           873)
         self.assertEquals(len(self.file.slice(starts_after=(1, 2, 3, 4))),
                           459)
+
+
+class TestShifting(unittest.TestCase):
+
+    def test_shift(self):
+        srt_file = SubRipFile([SubRipItem()])
+        srt_file.shift(1, 1, 1, 1)
+        self.assertEquals(srt_file[0].end, (1, 1, 1, 1))
 
 
 class TestDuckTyping(unittest.TestCase):
@@ -117,3 +135,20 @@ class TestEOLProperty(unittest.TestCase):
     def test_set_eol(self):
         self.file.eol = '\r\n'
         self.assertEquals(self.file.eol, '\r\n')
+
+
+class TestCleanIds(unittest.TestCase):
+
+    def setUp(self):
+        self.file = SubRipFile.open(os.path.join(file_path, 'tests', 'static',
+            'utf-8.srt'))
+
+    def test_clean_ids(self):
+        random.shuffle(self.file)
+        for item in self.file:
+            item.id = random.randint(0, 1000)
+        self.file.clean_ids()
+        self.assertEquals([i.id for i in self.file],
+                          range(1, len(self.file) + 1))
+        for first, second in izip(self.file[:-1], self.file[1:]):
+            self.assertTrue(first <= second)
