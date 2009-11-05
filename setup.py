@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 README = ''
 try:
@@ -12,10 +12,10 @@ except:
     pass
 
 setup(name='pysrt',
-      version='0.2.0',
+      version='0.2.1',
       author='Jean Boussier',
       author_email='jean.boussier@gmail.com',
-      packages=['pysrt'],
+      packages=find_packages(),
       description = "SubRip (.srt) subtitle parser and writer",
       long_description=README,
       license = "GPLv3",
