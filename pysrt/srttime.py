@@ -22,6 +22,8 @@ class Comparable(object):
     __gt__ = __build_comparator(1)
     __ge__ = __build_comparator(0, 1)
 
+    del __build_comparator
+
 
 class TimeItemDescriptor(object):
 
@@ -64,6 +66,7 @@ class SubRipTime(Comparable):
 
         All arguments are optional and have a default value of 0.
         """
+        super(SubRipTime, self).__init__()
         self.ordinal = hours * self.HOURS_RATIO \
                      + minutes * self.MINUTES_RATIO \
                      + seconds * self.SECONDS_RATIO \
@@ -97,6 +100,15 @@ class SubRipTime(Comparable):
 
     @classmethod
     def _coerce(cls, other):
+        """
+        Coerce many types to SubRipTime instance.
+        Supported types:
+          - str/unicode
+          - int/long
+          - datetime.time
+          - any iterable
+          - dict
+        """
         if isinstance(other, SubRipTime):
             return other
         elif isinstance(other, basestring):
@@ -126,10 +138,17 @@ class SubRipTime(Comparable):
 
     @classmethod
     def from_ordinal(cls, ordinal):
+        """
+        int -> SubRipTime corresponding to a total count of milliseconds
+        """
         return cls(milliseconds=int(ordinal))
 
     @classmethod
     def from_string(cls, source):
+        """
+        str/unicode(HH:MM:SS,UUU) -> SubRipTime corresponding to serial
+        raise InvalidTimeString
+        """
         match = cls.RE_TIME.match(source)
         if not match:
             raise InvalidTimeString
@@ -138,9 +157,15 @@ class SubRipTime(Comparable):
 
     @classmethod
     def from_time(cls, source):
-        return cls(hours=source.hour, minutes=source.minute, 
+        """
+        datetime.time -> SubRipTime corresponding to time object
+        """
+        return cls(hours=source.hour, minutes=source.minute,
             seconds=source.second, milliseconds=source.microsecond / 1000)
 
     def to_time(self):
+        """
+        Convert SubRipTime instance into a pure datetime.time object
+        """
         return time(self.hours, self.minutes, self.seconds,
                     self.milliseconds * 1000)
