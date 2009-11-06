@@ -2,8 +2,8 @@
 import os
 import re
 
-from srtexc import InvalidItem
-from srttime import SubRipTime
+from pysrt.srtexc import InvalidItem
+from pysrt.srttime import SubRipTime
 
 
 class SubRipItem(object):

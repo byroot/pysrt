@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-from os.path import exists, isfile
 from UserList import UserList
 from itertools import chain
 from copy import copy
@@ -10,8 +9,8 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-from srtexc import InvalidItem
-from srtitem import SubRipItem
+from pysrt.srtexc import InvalidItem
+from pysrt.srtitem import SubRipItem
 
 
 class SubRipFile(UserList, object):
@@ -24,9 +23,11 @@ class SubRipFile(UserList, object):
     ERROR_LOG = 1
     ERROR_RAISE = 2
 
-    def __init__(self, items=None, eol=None):
+    def __init__(self, items=None, eol=None, path=None, encoding='utf-8'):
         UserList.__init__(self, items or [])
         self._eol = eol
+        self.path = path
+        self.encoding = encoding
 
     def _get_eol(self):
         return self._eol or os.linesep
@@ -55,9 +56,7 @@ class SubRipFile(UserList, object):
 
         Encoding is set to utf-8 as default.
         """
-        new_file = cls()
-        new_file.encoding = encoding
-        new_file.path = path
+        new_file = cls(path=path, encoding=encoding)
 
         if file_descriptor is None:
             source_file = open(path, 'rU')

@@ -1,4 +1,4 @@
-from srttime import SubRipTime
-from srtitem import SubRipItem
-from srtfile import SubRipFile
-from srtexc import InvalidItem, InvalidTimeString
+from pysrt.srttime import SubRipTime
+from pysrt.srtitem import SubRipItem
+from pysrt.srtfile import SubRipFile
+from pysrt.srtexc import InvalidItem, InvalidTimeString

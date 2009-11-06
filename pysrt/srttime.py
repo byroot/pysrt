@@ -2,7 +2,7 @@
 import re
 from datetime import time
 
-from srtexc import InvalidTimeString
+from pysrt.srtexc import InvalidTimeString
 
 
 class Comparable(object):
@@ -137,9 +137,9 @@ class SubRipTime(Comparable):
         return cls(**items)
 
     @classmethod
-    def from_time(cls, time):
-        return cls(hours=time.hour, minutes=time.minute, seconds=time.second,
-                   milliseconds=time.microsecond / 1000)
+    def from_time(cls, source):
+        return cls(hours=source.hour, minutes=source.minute, 
+            seconds=source.second, milliseconds=source.microsecond / 1000)
 
     def to_time(self):
         return time(self.hours, self.minutes, self.seconds,
