@@ -17,12 +17,12 @@ class TestAttributes(unittest.TestCase):
         self.item = SubRipItem()
 
     def test_has_id(self):
-        self.assertTrue(hasattr(self.item, 'id'))
-        self.assertTrue(isinstance(self.item.id, int))
+        self.assertTrue(hasattr(self.item, 'index'))
+        self.assertTrue(isinstance(self.item.index, int))
 
     def test_has_content(self):
-        self.assertTrue(hasattr(self.item, 'sub_title'))
-        self.assertTrue(isinstance(self.item.sub_title, unicode))
+        self.assertTrue(hasattr(self.item, 'text'))
+        self.assertTrue(isinstance(self.item.text, unicode))
 
     def test_has_start(self):
         self.assertTrue(hasattr(self.item, 'start'))
@@ -36,7 +36,7 @@ class TestAttributes(unittest.TestCase):
 class TestShifting(unittest.TestCase):
 
     def setUp(self):
-        self.item = SubRipItem(1, sub_title="Hello world !")
+        self.item = SubRipItem(1, text="Hello world !")
         self.item.shift(minutes=1)
         self.item.end.shift(seconds=20)
 
@@ -55,7 +55,7 @@ class TestShifting(unittest.TestCase):
 class TestOperators(unittest.TestCase):
 
     def setUp(self):
-        self.item = SubRipItem(1, sub_title="Hello world !")
+        self.item = SubRipItem(1, text="Hello world !")
         self.item.shift(minutes=1)
         self.item.end.shift(seconds=20)
 
@@ -66,7 +66,7 @@ class TestOperators(unittest.TestCase):
 class TestSerialAndParsing(unittest.TestCase):
 
     def setUp(self):
-        self.item = SubRipItem(1, sub_title="Hello world !")
+        self.item = SubRipItem(1, text="Hello world !")
         self.item.shift(minutes=1)
         self.item.end.shift(seconds=20)
         self.string = u'1\n00:01:00,000 --> 00:01:20,000\nHello world !\n'

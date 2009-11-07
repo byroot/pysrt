@@ -12,25 +12,25 @@ from pysrt.srttime import SubRipTime
 class SubRipItem(object):
     """
     SubRipItem(sub_id, start, end, sub_title)
-    
+
     sub_id -> int: index of item in file. 0 by default.
-    start, end -> SubRipTime or coercable. 
+    start, end -> SubRipTime or coercable.
     sub_title -> unicode: text content for item.
     """
-    RE_ITEM = re.compile(r'''(?P<sub_id>\d+)
+    RE_ITEM = re.compile(r'''(?P<index>\d+)
 (?P<start>\d{2}:\d{2}:\d{2},\d{3}) --> (?P<end>\d{2}:\d{2}:\d{2},\d{3})
-(?P<sub_title>.*)''', re.DOTALL)
+(?P<text>.*)''', re.DOTALL)
     ITEM_PATTERN = u'%s\n%s --> %s\n%s\n'.replace('\n', os.linesep)
 
-    def __init__(self, sub_id=0, start=None, end=None, sub_title=''):
-        self.id = int(sub_id)
+    def __init__(self, index=0, start=None, end=None, text=''):
+        self.index = int(index)
         self.start = start or SubRipTime()
         self.end = end or SubRipTime()
-        self.sub_title = unicode(sub_title)
+        self.text = unicode(text)
 
     def __unicode__(self):
-        return self.ITEM_PATTERN % (self.id, self.start, self.end,
-                                    self.sub_title)
+        return self.ITEM_PATTERN % (self.index, self.start, self.end,
+                                    self.text)
 
     def __cmp__(self, other):
         return cmp(self.start, other.start) \

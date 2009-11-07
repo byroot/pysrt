@@ -123,10 +123,10 @@ class SubRipFile(UserList, object):
         for item in self:
             item.shift(*args, **kwargs)
 
-    def clean_ids(self):
+    def clean_indexes(self):
         self.sort()
         for index, item in enumerate(self):
-            item.id = index + 1
+            item.index = index + 1
 
     def save(self, path=None, encoding=None, eol=None):
         """

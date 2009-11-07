@@ -137,18 +137,18 @@ class TestEOLProperty(unittest.TestCase):
         self.assertEquals(self.file.eol, '\r\n')
 
 
-class TestCleanIds(unittest.TestCase):
+class TestCleanIndexes(unittest.TestCase):
 
     def setUp(self):
         self.file = SubRipFile.open(os.path.join(file_path, 'tests', 'static',
             'utf-8.srt'))
 
-    def test_clean_ids(self):
+    def test_clean_indexes(self):
         random.shuffle(self.file)
         for item in self.file:
-            item.id = random.randint(0, 1000)
-        self.file.clean_ids()
-        self.assertEquals([i.id for i in self.file],
+            item.index = random.randint(0, 1000)
+        self.file.clean_indexes()
+        self.assertEquals([i.index for i in self.file],
                           range(1, len(self.file) + 1))
         for first, second in izip(self.file[:-1], self.file[1:]):
             self.assertTrue(first <= second)

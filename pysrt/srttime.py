@@ -8,7 +8,7 @@ from datetime import time
 from pysrt.srtexc import InvalidTimeString
 
 
-class Comparable(object):
+class Comparable(object): # pylint: disable-msg=E0211,R0903
     """
     Some builtin types like datetime.time don't use the __cmp__ interface.
     This class map "rich comparison" methods to __cmp__
