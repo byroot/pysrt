@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+SubRip's subtitle parser
+"""
 import os
 import re
 
@@ -7,7 +10,13 @@ from pysrt.srttime import SubRipTime
 
 
 class SubRipItem(object):
-
+    """
+    SubRipItem(sub_id, start, end, sub_title)
+    
+    sub_id -> int: index of item in file. 0 by default.
+    start, end -> SubRipTime or coercable. 
+    sub_title -> unicode: text content for item.
+    """
     RE_ITEM = re.compile(r'''(?P<sub_id>\d+)
 (?P<start>\d{2}:\d{2}:\d{2},\d{3}) --> (?P<end>\d{2}:\d{2}:\d{2},\d{3})
 (?P<sub_title>.*)''', re.DOTALL)
@@ -20,8 +29,8 @@ class SubRipItem(object):
         self.sub_title = unicode(sub_title)
 
     def __unicode__(self):
-        return self.ITEM_PATTERN % (self.id,
-            self.start, self.end, self.sub_title)
+        return self.ITEM_PATTERN % (self.id, self.start, self.end,
+                                    self.sub_title)
 
     def __cmp__(self, other):
         return cmp(self.start, other.start) \

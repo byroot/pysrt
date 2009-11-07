@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+SubRip's time format parser: HH:MM:SS,mmm
+"""
 import re
 from datetime import time
 
@@ -146,7 +149,7 @@ class SubRipTime(Comparable):
     @classmethod
     def from_string(cls, source):
         """
-        str/unicode(HH:MM:SS,UUU) -> SubRipTime corresponding to serial
+        str/unicode(HH:MM:SS,mmm) -> SubRipTime corresponding to serial
         raise InvalidTimeString
         """
         match = cls.RE_TIME.match(source)
