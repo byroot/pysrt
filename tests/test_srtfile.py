@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import os
 import sys
@@ -49,10 +50,9 @@ class TestOpen(unittest.TestCase):
         srt_file = SubRipFile.open(self.invalid_path,
             error_handling=SubRipFile.ERROR_LOG)
         sys.stderr.seek(0)
-        self.assertEquals(sys.stderr.read(), 'PySRT-InvalidItem(/Users/byroot'
-            u'/workspace/pysrt/tests/static/invalid.srt:3): \n1\n00:00:01 -->'
-            u' 00:00:10\nThis subtitle is invalid\n\nPySRT-InvalidItem(/Users'
-            u'/byroot/workspace/pysrt/tests/static/invalid.srt:4): \n\n')
+        self.assertEquals(sys.stderr.read(), 'PySRT-InvalidItem(%s:3): \n1\n00:'
+            '00:01 --> 00:00:10\nThis subtitle is invalid\n\nPySRT-InvalidItem('
+            '%s:4): \n\n' % ((self.invalid_path,) * 2))
 
 
 class TestSerialization(unittest.TestCase):
