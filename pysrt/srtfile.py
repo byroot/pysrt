@@ -18,6 +18,15 @@ class SubRipFile(UserList, object):
     SubRip file descriptor.
 
     Provide a pure Python mapping on all metadata.
+
+    SubRipFile(items, eol, path, encoding)
+
+    items -> list of SubRipItem. Default to [].
+    eol -> str: end of line character. Default to linesep used in opened file
+        if any else to os.linesep.
+    path -> str: path where file will be saved. To open an existant file see
+        SubRipFile.open.
+    encoding -> str: encoding used at file save. Default to utf-8.
     """
     ERROR_PASS = 0
     ERROR_LOG = 1
