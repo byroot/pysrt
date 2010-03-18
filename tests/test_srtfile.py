@@ -77,6 +77,18 @@ class TestSerialization(unittest.TestCase):
                           open(self.utf8_path, 'rb').read())
         os.remove(self.temp_path)
 
+    def test_eol_conversion(self):
+        input_file = open(self.windows_path, 'rU')
+        input_file.read()
+        self.assertEquals(input_file.newlines, '\r\n')
+
+        srt_file = SubRipFile.open(self.windows_path, encoding='windows-1252')
+        srt_file.save(self.temp_path, eol='\n')
+
+        output_file = open(self.temp_path, 'rU')
+        output_file.read()
+        self.assertEquals(output_file.newlines, '\n')
+
 
 class TestSlice(unittest.TestCase):
 

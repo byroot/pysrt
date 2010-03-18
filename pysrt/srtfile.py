@@ -147,12 +147,12 @@ class SubRipFile(UserList, object):
         """
         path = path or self.path
         encoding = encoding or self.encoding
-        eol = eol or self.eol
+        output_eol = eol or self.eol
 
         save_file = open(path, 'w+')
         for item in self:
             string_repr = unicode(item)
-            if eol != self.eol:
-                string_repr = string_repr.replace(self.eol, eol)
+            if output_eol != '\n':
+                string_repr = string_repr.replace('\n', output_eol)
             save_file.write(string_repr.encode(encoding))
         save_file.close()
