@@ -12,7 +12,7 @@ except:
     pass
 
 setup(name='pysrt',
-      version='0.2.3',
+      version='0.2.4',
       author='Jean Boussier',
       author_email='jean.boussier@gmail.com',
       packages=find_packages(),
