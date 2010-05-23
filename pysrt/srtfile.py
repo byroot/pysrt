@@ -80,10 +80,11 @@ class SubRipFile(UserList, object):
                 string_buffer.seek(0)
                 source = unicode(string_buffer.read(), new_file.encoding)
                 try:
-                    new_item = SubRipItem.from_string(source)
-                    new_file.append(new_item)
-                except InvalidItem, error:
-                    cls._handle_error(error, error_handling, path, index)
+                    try:
+                        new_item = SubRipItem.from_string(source)
+                        new_file.append(new_item)
+                    except InvalidItem, error:
+                        cls._handle_error(error, error_handling, path, index)
                 finally:
                     string_buffer.truncate(0)
 
