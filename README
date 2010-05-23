@@ -6,7 +6,7 @@ Usage
 ::
 
     from pysrt import SubRipFile, SubRipItem, SubRipTime
-    subs = SubRipFile('some/file.srt')
+    subs = SubRipFile.open('some/file.srt')
     subs[42].end.hours += 3
     subs[42].text = "Never end !"
 
