@@ -48,7 +48,7 @@ class SubRipItem(object):
 
     @classmethod
     def from_string(cls, source):
-        match = cls.RE_ITEM.match(source)
+        match = cls.RE_ITEM.match(source.replace('\r', ''))
         if not match:
             raise InvalidItem(source)
 

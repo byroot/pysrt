@@ -59,7 +59,7 @@ class SubRipFile(UserList, object):
 
     @classmethod
     def open(cls, path='', encoding='utf-8', error_handling=ERROR_PASS,
-             file_descriptor=None):
+             file_descriptor=None, eol=None):
         """
         open([path, [encoding]])
 
@@ -79,16 +79,17 @@ class SubRipFile(UserList, object):
             else:
                 string_buffer.seek(0)
                 source = unicode(string_buffer.read(), new_file.encoding)
-                try:
+                if source.strip():
                     try:
-                        new_item = SubRipItem.from_string(source)
-                        new_file.append(new_item)
-                    except InvalidItem, error:
-                        cls._handle_error(error, error_handling, path, index)
-                finally:
-                    string_buffer.truncate(0)
+                        try:
+                            new_item = SubRipItem.from_string(source)
+                            new_file.append(new_item)
+                        except InvalidItem, error:
+                            cls._handle_error(error, error_handling, path, index)
+                    finally:
+                        string_buffer.truncate(0)
 
-        eol = cls._extract_newline(source_file)
+        eol = eol or cls._extract_newline(source_file)
         if eol is not None:
             new_file.eol = eol
         source_file.close()
@@ -103,8 +104,9 @@ class SubRipFile(UserList, object):
                 return file_descriptor.newlines[0]
 
     @classmethod
-    def from_string(cls, source):
-        return cls.open(file_descriptor=StringIO(source))
+    def from_string(cls, source, **kwargs):
+        kwargs['file_descriptor'] = StringIO(source)
+        return cls.open(**kwargs)
 
     def slice(self, starts_before=None, starts_after=None, ends_before=None,
               ends_after=None):

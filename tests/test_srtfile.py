@@ -51,8 +51,30 @@ class TestOpen(unittest.TestCase):
             error_handling=SubRipFile.ERROR_LOG)
         sys.stderr.seek(0)
         self.assertEquals(sys.stderr.read(), 'PySRT-InvalidItem(%s:3): \n1\n00:'
-            '00:01 --> 00:00:10\nThis subtitle is invalid\n\nPySRT-InvalidItem('
-            '%s:4): \n\n' % ((self.invalid_path,) * 2))
+            '00:01 --> 00:00:10\nThis subtitle is invalid\n\n' % self.invalid_path)
+
+
+class TestFromString(unittest.TestCase):
+
+    def setUp(self):
+        self.static_path = os.path.join(file_path, 'tests', 'static')
+        self.utf8_path = os.path.join(self.static_path, 'utf-8.srt')
+        self.windows_path = os.path.join(self.static_path, 'windows-1252.srt')
+        self.invalid_path = os.path.join(self.static_path, 'invalid.srt')
+        self.temp_path = os.path.join(self.static_path, 'temp.srt')
+
+    def test_utf8(self):
+        self.assertEquals(len(SubRipFile.from_string(open(self.utf8_path).read())), 1332)
+        self.assertRaises(UnicodeDecodeError, SubRipFile.from_string,
+            open(self.windows_path).read())
+
+    def test_windows1252(self):
+        srt_string = open(self.windows_path).read()
+        srt_file = SubRipFile.from_string(srt_string, encoding='windows-1252', eol='\r\n')
+        self.assertEquals(len(srt_file), 1332)
+        self.assertEquals(srt_file.eol, '\r\n')
+        self.assertRaises(UnicodeDecodeError, SubRipFile.open,
+            self.utf8_path, encoding='ascii')
 
 
 class TestSerialization(unittest.TestCase):
