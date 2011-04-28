@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import codecs
 from UserList import UserList
 from itertools import chain
 from copy import copy
@@ -32,6 +33,16 @@ class SubRipFile(UserList, object):
     ERROR_LOG = 1
     ERROR_RAISE = 2
 
+    DEFAULT_ENCODING = 'utf_8'
+
+    BOMS = {
+        codecs.BOM_UTF8: 'utf_8',
+        codecs.BOM_UTF16_BE: 'utf_16_be',
+        codecs.BOM_UTF16_LE: 'utf_16_le',
+        codecs.BOM_UTF32_BE: 'utf_32_be',
+        codecs.BOM_UTF32_LE: 'utf_32_le'
+    }
+
     def __init__(self, items=None, eol=None, path=None, encoding='utf-8'):
         UserList.__init__(self, items or [])
         self._eol = eol
@@ -58,20 +69,31 @@ class SubRipFile(UserList, object):
             sys.stderr.write('\n')
 
     @classmethod
-    def open(cls, path='', encoding='utf-8', error_handling=ERROR_PASS,
+    def detect_encoding(cls, file_descriptor):
+        bom = file_descriptor.read(3)
+        if not bom in cls.BOMS:
+            # TODO: maybe a chardet integration
+            file_descriptor.seek(-3, 1) # rewind of 3 chars
+            return cls.DEFAULT_ENCODING
+        return cls.BOMS[bom]
+
+    @classmethod
+    def open(cls, path='', encoding=None, error_handling=ERROR_PASS,
              file_descriptor=None, eol=None):
         """
         open([path, [encoding]])
 
-        Encoding is set to utf-8 as default.
+        If you do not provide any encoding, it can be detected if the file
+        contain a bit order mark, unless it is set to utf-8 as default.
         """
-        new_file = cls(path=path, encoding=encoding)
-
         if file_descriptor is None:
             source_file = open(path, 'rU')
         else:
             source_file = file_descriptor
 
+        encoding = encoding or cls.detect_encoding(source_file)
+
+        new_file = cls(path=path, encoding=encoding)
         string_buffer = StringIO()
         for index, line in enumerate(chain(source_file, '\n')):
             if line.strip():

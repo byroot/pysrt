@@ -186,3 +186,15 @@ class TestCleanIndexes(unittest.TestCase):
                           range(1, len(self.file) + 1))
         for first, second in izip(self.file[:-1], self.file[1:]):
             self.assertTrue(first <= second)
+
+
+class TestBOM(unittest.TestCase):
+    "In response of issue #6 https://github.com/byroot/pysrt/issues/6"
+
+    def setUp(self):
+        self.path = os.path.join(file_path, 'tests', 'static', 'bom.srt')
+
+    def test_parsing_do_not_fail(self):
+        srt_file = SubRipFile.open(self.path)
+        self.assertEquals(srt_file[0].index, 1)
+        self.assertEquals(len(srt_file), 7)
