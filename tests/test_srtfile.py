@@ -192,9 +192,24 @@ class TestBOM(unittest.TestCase):
     "In response of issue #6 https://github.com/byroot/pysrt/issues/6"
 
     def setUp(self):
-        self.path = os.path.join(file_path, 'tests', 'static', 'bom.srt')
+        self.base_path = os.path.join(file_path, 'tests', 'static')
 
-    def test_parsing_do_not_fail(self):
-        srt_file = SubRipFile.open(self.path)
+    def __test_encoding(self, encoding):
+        srt_file = SubRipFile.open(os.path.join(self.base_path, encoding))
         self.assertEquals(srt_file[0].index, 1)
         self.assertEquals(len(srt_file), 7)
+
+    def test_utf8(self):
+        self.__test_encoding('bom-utf-8.srt')
+
+    def test_utf16le(self):
+        self.__test_encoding('bom-utf-16-le.srt')
+
+    def test_utf16be(self):
+        self.__test_encoding('bom-utf-16-be.srt')
+
+    def test_utf32le(self):
+        self.__test_encoding('bom-utf-32-le.srt')
+
+    def test_utf32be(self):
+        self.__test_encoding('bom-utf-32-be.srt')

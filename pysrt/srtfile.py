@@ -97,6 +97,7 @@ class SubRipFile(UserList, object):
             source_file = file_descriptor
 
         encoding = encoding or cls.detect_encoding(source_file)
+        source_file = codecs.EncodedFile(source_file, cls.DEFAULT_ENCODING, encoding)
 
         new_file = cls(path=path, encoding=encoding)
         string_buffer = StringIO()
@@ -105,11 +106,11 @@ class SubRipFile(UserList, object):
                 string_buffer.write(line)
             else:
                 string_buffer.seek(0)
-                source = unicode(string_buffer.read(), new_file.encoding)
+                source = string_buffer.read()
                 if source.strip():
                     try:
                         try:
-                            new_item = SubRipItem.from_string(source)
+                            new_item = SubRipItem.from_string(source.decode(cls.DEFAULT_ENCODING))
                             new_file.append(new_item)
                         except InvalidItem, error:
                             cls._handle_error(error, error_handling, path, index)
