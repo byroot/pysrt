@@ -35,13 +35,14 @@ class SubRipFile(UserList, object):
 
     DEFAULT_ENCODING = 'utf_8'
 
-    BOMS = {
-        codecs.BOM_UTF8: 'utf_8',
-        codecs.BOM_UTF16_BE: 'utf_16_be',
-        codecs.BOM_UTF16_LE: 'utf_16_le',
-        codecs.BOM_UTF32_BE: 'utf_32_be',
-        codecs.BOM_UTF32_LE: 'utf_32_le'
-    }
+    BOMS = (
+        (codecs.BOM_UTF32_LE, 'utf_32_le'),
+        (codecs.BOM_UTF32_BE, 'utf_32_be'),
+        (codecs.BOM_UTF16_LE, 'utf_16_le'),
+        (codecs.BOM_UTF16_BE, 'utf_16_be'),
+        (codecs.BOM_UTF8, 'utf_8')
+    )
+    BIGGER_BOM = max(len(bom) for bom, encoding in BOMS)
 
     def __init__(self, items=None, eol=None, path=None, encoding='utf-8'):
         UserList.__init__(self, items or [])
@@ -70,12 +71,16 @@ class SubRipFile(UserList, object):
 
     @classmethod
     def detect_encoding(cls, file_descriptor):
-        bom = file_descriptor.read(3)
-        if not bom in cls.BOMS:
-            # TODO: maybe a chardet integration
-            file_descriptor.seek(-3, 1) # rewind of 3 chars
-            return cls.DEFAULT_ENCODING
-        return cls.BOMS[bom]
+        first_chars = file_descriptor.read(cls.BIGGER_BOM)
+        file_descriptor.seek(-cls.BIGGER_BOM, 1) # rewind
+
+        for bom, encoding in cls.BOMS:
+            if first_chars.startswith(bom):
+                file_descriptor.seek(len(bom))
+                return encoding
+
+        # TODO: maybe a chardet integration
+        return cls.DEFAULT_ENCODING
 
     @classmethod
     def open(cls, path='', encoding=None, error_handling=ERROR_PASS,
