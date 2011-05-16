@@ -50,7 +50,6 @@ class SubRipItem(object):
     def from_string(cls, source):
         match = cls.RE_ITEM.match(source.replace('\r', ''))
         if not match:
-            print repr(source.replace('\r', ''))
             raise InvalidItem(source)
 
         data = dict(match.groupdict())
