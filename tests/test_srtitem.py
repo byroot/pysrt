@@ -73,6 +73,7 @@ class TestSerialAndParsing(unittest.TestCase):
         self.bad_string = u'foobar'
         self.coordinates = (u'1\n00:01:00,000 --> 00:01:20,000 X1:000 X2:000 '
                                 'Y1:050 Y2:100\nHello world !\n')
+        self.dots = u'1\n00:01:00.000 --> 00:01:20.000\nHello world !\n'
 
     def test_serialization(self):
         self.assertEqual(unicode(self.item), self.string)
@@ -84,3 +85,6 @@ class TestSerialAndParsing(unittest.TestCase):
 
     def test_coordinates(self):
         self.assertEquals(SubRipItem.from_string(self.coordinates), self.item)
+
+    def test_dots(self):
+        self.assertEquals(SubRipItem.from_string(self.dots), self.item)

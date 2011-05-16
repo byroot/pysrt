@@ -54,7 +54,7 @@ class SubRipTime(Comparable):
     TIME_PATTERN = '%02d:%02d:%02d,%03d'
     TIME_REPR = 'SubRipTime(%d, %d, %d, %d)'
     RE_TIME = re.compile(r'(?P<hours>\d{2}):(?P<minutes>\d{2}):'
-                         r'(?P<seconds>\d{2}),(?P<milliseconds>\d{3})')
+                         r'(?P<seconds>\d{2})[,\.](?P<milliseconds>\d{3})')
     SECONDS_RATIO = 1000
     MINUTES_RATIO = SECONDS_RATIO * 60
     HOURS_RATIO = MINUTES_RATIO * 60

@@ -18,7 +18,7 @@ class SubRipItem(object):
     sub_title -> unicode: text content for item.
     """
     RE_ITEM = re.compile(r'''(?P<index>\d+)
-(?P<start>\d{2}:\d{2}:\d{2},\d{3}) --> (?P<end>\d{2}:\d{2}:\d{2},\d{3})[\ XY\:\d]*
+(?P<start>\d{2}:\d{2}:\d{2}[,\.]\d{3}) --> (?P<end>\d{2}:\d{2}:\d{2}[,\.]\d{3})[\ XY\:\d]*
 (?P<text>.*)''', re.DOTALL)
     ITEM_PATTERN = u'%s\n%s --> %s\n%s\n'.replace('\n', os.linesep)
 
