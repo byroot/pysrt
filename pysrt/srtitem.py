@@ -18,11 +18,11 @@ class SubRipItem(object):
     sub_title -> unicode: text content for item.
     """
     RE_ITEM = re.compile(r'''(?P<index>\d+)
-(?P<start>\d{2}:\d{2}:\d{2},\d{3}) --> (?P<end>\d{2}:\d{2}:\d{2},\d{3})
+(?P<start>\d{2}:\d{2}:\d{2},\d{3}) --> (?P<end>\d{2}:\d{2}:\d{2},\d{3})[\ XY\:\d]*
 (?P<text>.*)''', re.DOTALL)
     ITEM_PATTERN = u'%s\n%s --> %s\n%s\n'.replace('\n', os.linesep)
 
-    def __init__(self, index=0, start=None, end=None, text=''):
+    def __init__(self, index=0, start=None, end=None, text='', **kwargs):
         self.index = int(index)
         self.start = start or SubRipTime()
         self.end = end or SubRipTime()
@@ -50,6 +50,7 @@ class SubRipItem(object):
     def from_string(cls, source):
         match = cls.RE_ITEM.match(source.replace('\r', ''))
         if not match:
+            print repr(source.replace('\r', ''))
             raise InvalidItem(source)
 
         data = dict(match.groupdict())

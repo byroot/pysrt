@@ -213,3 +213,18 @@ class TestBOM(unittest.TestCase):
 
     def test_utf32be(self):
         self.__test_encoding('bom-utf-32-be.srt')
+
+
+class TestIntegration(unittest.TestCase):
+    """
+    Test some borderlines features found on
+    http://ale5000.altervista.org/subtitles.htm
+    """
+
+    def setUp(self):
+        self.base_path = os.path.join(file_path, 'tests', 'static')
+
+    def test_length(self):
+        path = os.path.join(self.base_path, 'capability_tester.srt')
+        file = SubRipFile.open(path)
+        self.assertEquals(len(file), 37)
