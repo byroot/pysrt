@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 README = ''
 try:
-    f = open('README')
+    f = open('README.rst')
     README = f.read()
     f.close()
 except:
