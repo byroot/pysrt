@@ -133,6 +133,8 @@ class TestShifting(unittest.TestCase):
         srt_file = SubRipFile([SubRipItem()])
         srt_file.shift(1, 1, 1, 1)
         self.assertEquals(srt_file[0].end, (1, 1, 1, 1))
+        srt_file.shift(ratio=2)
+        self.assertEquals(srt_file[0].end, (2, 2, 2, 2))
 
 
 class TestDuckTyping(unittest.TestCase):

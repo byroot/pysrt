@@ -51,6 +51,11 @@ class TestShifting(unittest.TestCase):
         self.assertEqual(self.item.start, (3, 58, 56, 996))
         self.assertEqual(self.item.end, (3, 59, 16, 996))
 
+    def test_shift_by_ratio(self):
+        self.item.shift(ratio=2)
+        self.assertEqual(self.item.start, {'minutes': 2})
+        self.assertEqual(self.item.end, {'minutes': 2, 'seconds': 40})
+
 
 class TestOperators(unittest.TestCase):
 

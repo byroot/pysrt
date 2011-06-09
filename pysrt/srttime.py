@@ -145,6 +145,8 @@ class SubRipTime(Comparable):
 
         All arguments are optional and have a default value of 0.
         """
+        if 'ratio' in kwargs:
+            self *= kwargs.pop('ratio')
         self += self.__class__(*args, **kwargs)
 
     @classmethod

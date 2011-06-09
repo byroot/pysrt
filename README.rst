@@ -28,6 +28,7 @@ Shifting: ::
 
     >>> subs.shift(seconds=-2) # Move all subs 2 seconds earlier
     >>> subs.shift(minutes=1)  # Move all subs 1 minutes later
+    >>> subs.shift(ratio=25/23.9) # convert a 23.9 fps subtitle in 25 fps
     >>> first_sub.shift(seconds=1) # Move the first sub 1 second later
     >>> first_sub.start += {'seconds': -1} # Make the first sub start 1 second earlier
     

@@ -153,12 +153,18 @@ class SubRipFile(UserList, object):
         return clone
 
     def shift(self, *args, **kwargs):
-        """
-        shift(hours, minutes, seconds, milliseconds)
+        """shift(hours, minutes, seconds, milliseconds, ratio)
 
-        Add given values to start and end attributes of each items of file
-        with given values.
-        All arguments are optional and have a default value of 0.
+        Shift `start` and `end` attributes of each items of file either by
+        applying a ratio or by adding an offset.
+
+        `ratio` should be either an int or a float.
+        Example to convert subtitles from 23.9 fps to 25 fps:
+        >>> subs.shift(ratio=25/23.9)
+
+        All "time" arguments are optional and have a default value of 0.
+        Example to delay all subs from 2 seconds and half
+        >>> subs.shift(seconds=2, milliseconds=500)
         """
         for item in self:
             item.shift(*args, **kwargs)
