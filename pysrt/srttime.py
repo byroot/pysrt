@@ -102,6 +102,13 @@ class SubRipTime(Comparable):
         self.ordinal -= self._coerce(other).ordinal
         return self
 
+    def __mul__(self, ratio):
+        return self.from_ordinal(int(round(self.ordinal * ratio)))
+
+    def __imul__(self, ratio):
+        self.ordinal = int(round(self.ordinal * ratio))
+        return self
+
     @classmethod
     def _coerce(cls, other):
         """

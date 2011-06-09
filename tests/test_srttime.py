@@ -123,9 +123,7 @@ class TestOperators(unittest.TestCase):
         self.assertEquals(self.time + (1, 2, 3, 4), (2, 4, 6, 8))
 
     def test_iadd(self):
-        print self.time
         self.time += (1, 2, 3, 4)
-        print self.time
         self.assertEquals(self.time, (2, 4, 6, 8))
 
     def test_sub(self):
@@ -134,3 +132,13 @@ class TestOperators(unittest.TestCase):
     def test_isub(self):
         self.time -= (1, 2, 3, 4)
         self.assertEquals(self.time, 0)
+
+    def test_mul(self):
+        self.assertEquals(self.time * 2,  SubRipTime(2, 4, 6, 8))
+        self.assertEquals(self.time * 0.5,  (0, 31, 1, 502))
+
+    def test_imul(self):
+        self.time *= 2
+        self.assertEquals(self.time,  (2, 4, 6, 8))
+        self.time *= 0.5
+        self.assertEquals(self.time, (1, 2, 3, 4))
