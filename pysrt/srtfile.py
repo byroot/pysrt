@@ -35,13 +35,11 @@ class SubRipFile(UserList, object):
 
     DEFAULT_ENCODING = 'utf_8'
 
-    BOMS = (
-        (codecs.BOM_UTF32_LE, 'utf_32_le'),
-        (codecs.BOM_UTF32_BE, 'utf_32_be'),
-        (codecs.BOM_UTF16_LE, 'utf_16_le'),
-        (codecs.BOM_UTF16_BE, 'utf_16_be'),
-        (codecs.BOM_UTF8, 'utf_8')
-    )
+    BOMS = ((codecs.BOM_UTF32_LE, 'utf_32_le'),
+            (codecs.BOM_UTF32_BE, 'utf_32_be'),
+            (codecs.BOM_UTF16_LE, 'utf_16_le'),
+            (codecs.BOM_UTF16_BE, 'utf_16_be'),
+            (codecs.BOM_UTF8, 'utf_8'))
     BIGGER_BOM = max(len(bom) for bom, encoding in BOMS)
 
     def __init__(self, items=None, eol=None, path=None, encoding='utf-8'):
@@ -97,7 +95,8 @@ class SubRipFile(UserList, object):
             source_file = file_descriptor
 
         encoding = encoding or cls.detect_encoding(source_file)
-        source_file = codecs.EncodedFile(source_file, cls.DEFAULT_ENCODING, encoding)
+        source_file = codecs.EncodedFile(source_file, cls.DEFAULT_ENCODING,
+                                         encoding)
 
         new_file = cls(path=path, encoding=encoding)
         string_buffer = StringIO()
@@ -110,7 +109,8 @@ class SubRipFile(UserList, object):
                 if source.strip():
                     try:
                         try:
-                            new_item = SubRipItem.from_string(source.decode(cls.DEFAULT_ENCODING))
+                            source = source.decode(cls.DEFAULT_ENCODING)
+                            new_item = SubRipItem.from_string(source)
                             new_file.append(new_item)
                         except InvalidItem, error:
                             cls._handle_error(error, error_handling, path, index)
