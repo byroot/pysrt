@@ -183,13 +183,17 @@ class SubRipFile(UserList, object):
         Use init eol if no other provided.
         """
         path = path or self.path
+
+        save_file = open(path, 'w+')
+        self.write_into(save_file, encoding=encoding, eol=eol)
+        save_file.close()
+
+    def write_into(self, io, encoding=None, eol=None):
         encoding = encoding or self.encoding
         output_eol = eol or self.eol
 
-        save_file = open(path, 'w+')
         for item in self:
             string_repr = unicode(item)
             if output_eol != '\n':
                 string_repr = string_repr.replace('\n', output_eol)
-            save_file.write(string_repr.encode(encoding))
-        save_file.close()
+            io.write(string_repr.encode(encoding))
