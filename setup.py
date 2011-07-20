@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os
+import pysrt
 from setuptools import setup, find_packages
-
 README = ''
 try:
     f = open('README.rst')
@@ -12,7 +12,7 @@ except:
     pass
 
 setup(name='pysrt',
-      version='0.3.0',
+      version='.'.join(str(i) for i in pysrt.VERSION),
       author='Jean Boussier',
       author_email='jean.boussier@gmail.com',
       packages=find_packages(),
