@@ -83,6 +83,9 @@ class SubRipTime(Comparable):
         return unicode(str(self))
 
     def __str__(self):
+        if self.ordinal < 0:
+            # Represent negative times as zero
+            return str(SubRipTime.from_ordinal(0))
         return self.TIME_PATTERN % tuple(self)
 
     def __cmp__(self, other):
