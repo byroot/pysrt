@@ -1,8 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os
+import sys
 import pysrt
 from setuptools import setup, find_packages
+
+
 README = ''
 try:
     f = open('README.rst')
@@ -11,6 +14,10 @@ try:
 except:
     pass
 
+REQUIRES = ['chardet']
+if sys.version_info < (2, 7):
+    REQUIRES.append('argparse')
+
 setup(name='pysrt',
       version='.'.join(str(i) for i in pysrt.VERSION),
       author='Jean Boussier',
@@ -18,11 +25,13 @@ setup(name='pysrt',
       packages=find_packages(),
       description = "SubRip (.srt) subtitle parser and writer",
       long_description=README,
-      license = "GPLv3",
-      platforms = ["Independent"],
-      keywords = "SubRip srt subtitle",
-      url = "http://github.com/byroot/pysrt",
-      classifiers = [
+      install_requires=REQUIRES,
+      entry_points={'console_scripts': ['srt = pysrt.commands:main']},
+      license="GPLv3",
+      platforms=["Independent"],
+      keywords="SubRip srt subtitle",
+      url="https://github.com/byroot/pysrt",
+      classifiers=[
           "Development Status :: 5 - Production/Stable",
           "Intended Audience :: Developers",
           "License :: OSI Approved :: GNU General Public License (GPL)",
@@ -31,5 +40,5 @@ setup(name='pysrt',
           "Topic :: Multimedia :: Video",
           "Topic :: Software Development :: Libraries",
           "Topic :: Text Processing :: Markup",
-      ],
-      )
+      ]
+)

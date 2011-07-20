@@ -1,6 +1,47 @@
+pysrt
+=============
+
 pysrt is a Python library used to edit or create SubRip files.
 
-Basic Usage
+Foreword
+====================
+
+pysrt is mainly designed tas a library, but if you are experiencing troubles
+with bad subtitles you can first try to use `ruby-osdb <https://github.com/byroot/ruby-osdb>`_
+which will try to find the best subtitle for your movie. If you are still unlucky
+pysrt also provide an ``srt`` command useful for either shift, split, or rescale a
+*.srt* file.
+
+Command Usage
+=====================
+
+Shifting: ::
+  
+    $ srt -i shift 2s500ms movie.srt
+
+Spliting: ::
+
+    $ srt split 58m26s movie.srt
+
+Rescaling: ::
+
+    $ srt -i rate 23.9 25 movie.srt
+
+Installation
+=================
+
+pysrt is available on pypi. To intall it you can use either
+
+pip: ::
+    
+    $ sudo pip install pysrt
+    
+or distutils: ::
+
+    $ sudo easy_install pysrt
+
+
+Library Usage
 =============
 
 Import: ::
