@@ -1,4 +1,4 @@
-VERSION = (0, 3, 0)
+VERSION = (0, 3, 1)
 from pysrt.srttime import SubRipTime
 from pysrt.srtitem import SubRipItem
 from pysrt.srtfile import SubRipFile
