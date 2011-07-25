@@ -76,7 +76,7 @@ class TestTimeParsing(unittest.TestCase):
             self.assertEquals(time_string, str(SubRipTime(*time_items)))
 
     def test_negative_serialization(self):
-        self.assertEquals('00:00:00,000', SubRipTime(-1, 2, 3, 4))
+        self.assertEquals(u'00:00:00,000', unicode(SubRipTime(-1, 2, 3, 4)))
 
     def test_invalid_time_string(self):
         self.assertRaises(InvalidTimeString, SubRipTime.from_string, 'hello')
