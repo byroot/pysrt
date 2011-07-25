@@ -142,7 +142,8 @@ class SubRipShifter(object):
     def input_file(self):
         if not hasattr(self, '_source_file'):
             encoding = detect(open(self.arguments.file).read()).get('encoding')
-            self._source_file = SubRipFile.open(self.arguments.file, encoding=encoding)
+            self._source_file = SubRipFile.open(self.arguments.file,
+                encoding=encoding, error_handling=SubRipFile.ERROR_LOG)
         return self._source_file
 
     @property
