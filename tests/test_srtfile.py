@@ -3,6 +3,7 @@
 
 import os
 import sys
+import codecs
 from datetime import time
 from itertools import izip
 import unittest
@@ -64,12 +65,13 @@ class TestFromString(unittest.TestCase):
         self.temp_path = os.path.join(self.static_path, 'temp.srt')
 
     def test_utf8(self):
-        self.assertEquals(len(SubRipFile.from_string(open(self.utf8_path).read())), 1332)
+        unicode_content = codecs.open(self.utf8_path, encoding='utf_8').read()
+        self.assertEquals(len(SubRipFile.from_string(unicode_content)), 1332)
         self.assertRaises(UnicodeDecodeError, SubRipFile.from_string,
             open(self.windows_path).read())
 
     def test_windows1252(self):
-        srt_string = open(self.windows_path).read()
+        srt_string = codecs.open(self.windows_path, encoding='windows-1252').read()
         srt_file = SubRipFile.from_string(srt_string, encoding='windows-1252', eol='\r\n')
         self.assertEquals(len(srt_file), 1332)
         self.assertEquals(srt_file.eol, '\r\n')
@@ -87,8 +89,9 @@ class TestSerialization(unittest.TestCase):
         self.temp_path = os.path.join(self.static_path, 'temp.srt')
 
     def test_compare_from_string_and_from_path(self):
+        unicode_content = codecs.open(self.utf8_path, encoding='utf_8').read()
         iterator = izip(SubRipFile.open(self.utf8_path),
-            SubRipFile.from_string(open(self.utf8_path).read()))
+            SubRipFile.from_string(unicode_content))
         for file_item, string_item in iterator:
             self.assertEquals(unicode(file_item), unicode(string_item))
 
@@ -198,8 +201,8 @@ class TestBOM(unittest.TestCase):
 
     def __test_encoding(self, encoding):
         srt_file = SubRipFile.open(os.path.join(self.base_path, encoding))
-        self.assertEquals(srt_file[0].index, 1)
         self.assertEquals(len(srt_file), 7)
+        self.assertEquals(srt_file[0].index, 1)
 
     def test_utf8(self):
         self.__test_encoding('bom-utf-8.srt')

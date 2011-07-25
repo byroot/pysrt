@@ -40,6 +40,7 @@ class SubRipFile(UserList, object):
             (codecs.BOM_UTF16_LE, 'utf_16_le'),
             (codecs.BOM_UTF16_BE, 'utf_16_be'),
             (codecs.BOM_UTF8, 'utf_8'))
+    CODECS_BOMS = dict((codec, unicode(bom, codec)) for bom, codec in BOMS)
     BIGGER_BOM = max(len(bom) for bom, encoding in BOMS)
 
     def __init__(self, items=None, eol=None, path=None, encoding='utf-8'):
@@ -58,70 +59,46 @@ class SubRipFile(UserList, object):
 
     @classmethod
     def _handle_error(cls, error, error_handling, path, index):
-        path = os.path.abspath(path)
+        path = path and os.path.abspath(path)
         if error_handling == cls.ERROR_RAISE:
             error.args = (path, index) + error.args
             raise error
         if error_handling == cls.ERROR_LOG:
             sys.stderr.write('PySRT-InvalidItem(%s:%s): \n' % (path, index))
-            sys.stderr.write(error.args[0].encode('ascii', 'ignore'))
+            sys.stderr.write(error.args[0].encode('ascii', 'replace'))
             sys.stderr.write('\n')
 
     @classmethod
-    def detect_encoding(cls, file_descriptor):
-        first_chars = file_descriptor.read(cls.BIGGER_BOM)
-        file_descriptor.seek(-cls.BIGGER_BOM, 1) # rewind
-
-        for bom, encoding in cls.BOMS:
-            if first_chars.startswith(bom):
-                file_descriptor.seek(len(bom))
-                return encoding
-
-        # TODO: maybe a chardet integration
-        return cls.DEFAULT_ENCODING
-
-    @classmethod
-    def open(cls, path='', encoding=None, error_handling=ERROR_PASS,
-             file_descriptor=None, eol=None):
+    def open(cls, path='', encoding=None, error_handling=ERROR_PASS, eol=None):
         """
         open([path, [encoding]])
 
         If you do not provide any encoding, it can be detected if the file
         contain a bit order mark, unless it is set to utf-8 as default.
         """
-        if file_descriptor is None:
-            source_file = open(path, 'rU')
-        else:
-            source_file = file_descriptor
-
-        encoding = encoding or cls.detect_encoding(source_file)
-        source_file = codecs.EncodedFile(source_file, cls.DEFAULT_ENCODING,
-                                         encoding)
-
         new_file = cls(path=path, encoding=encoding)
-        string_buffer = StringIO()
-        for index, line in enumerate(chain(source_file, '\n')):
-            if line.strip():
-                string_buffer.write(line)
-            else:
-                string_buffer.seek(0)
-                source = string_buffer.read()
-                if source.strip():
-                    try:
-                        try:
-                            source = source.decode(cls.DEFAULT_ENCODING)
-                            new_item = SubRipItem.from_string(source)
-                            new_file.append(new_item)
-                        except InvalidItem, error:
-                            cls._handle_error(error, error_handling, path, index)
-                    finally:
-                        string_buffer.truncate(0)
-
+        source_file = cls._open_unicode_file(path, claimed_encoding=encoding)
+        new_file.read(source_file, error_handling=error_handling)
         eol = eol or cls._extract_newline(source_file)
         if eol is not None:
             new_file.eol = eol
         source_file.close()
         return new_file
+
+    def read(self, source_file, error_handling=ERROR_PASS):
+        string_buffer = []
+        for index, line in enumerate(chain(source_file, u'\n')):
+            if line.strip():
+                string_buffer.append(line)
+            else:
+                source = u''.join(string_buffer)
+                string_buffer = []
+                if source.strip():
+                    try:
+                        self.append(SubRipItem.from_string(source))
+                    except InvalidItem, error:
+                        self._handle_error(error, error_handling, self.path, index)
+        return self
 
     @staticmethod
     def _extract_newline(file_descriptor):
@@ -132,9 +109,37 @@ class SubRipFile(UserList, object):
                 return file_descriptor.newlines[0]
 
     @classmethod
+    def _detect_encoding(cls, path):
+        file_descriptor = open(path)
+        first_chars = file_descriptor.read(cls.BIGGER_BOM)
+        file_descriptor.close()
+
+        for bom, encoding in cls.BOMS:
+            if first_chars.startswith(bom):
+                return encoding
+
+        # TODO: maybe a chardet integration
+        return cls.DEFAULT_ENCODING
+
+    @classmethod
+    def _open_unicode_file(cls, path, claimed_encoding=None):
+        encoding = claimed_encoding or cls._detect_encoding(path)
+        source_file = codecs.open(path, 'rU', encoding=encoding)
+        
+        # get rid of BOM if any
+        possible_bom = cls.CODECS_BOMS.get(encoding, None)
+        if possible_bom:
+            file_bom = source_file.read(len(possible_bom))
+            if not file_bom == possible_bom:
+                source_file.seek(0) # if not rewind
+        return source_file
+
+    @classmethod
     def from_string(cls, source, **kwargs):
-        kwargs['file_descriptor'] = StringIO(source)
-        return cls.open(**kwargs)
+        error_handling = kwargs.pop('error_handling', None)
+        new_file = cls(**kwargs)
+        new_file.read(source.splitlines(True), error_handling=error_handling)
+        return new_file
 
     def slice(self, starts_before=None, starts_after=None, ends_before=None,
               ends_after=None):
