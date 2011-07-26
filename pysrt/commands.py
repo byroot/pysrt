@@ -11,6 +11,9 @@ from textwrap import dedent
 from chardet import detect
 from pysrt import SubRipFile, SubRipTime, VERSION_STRING
 
+def underline(string):
+    return "\033[4m%s\033[0m" % string
+
 
 class SubRipShifter(object):
 
@@ -74,23 +77,23 @@ class SubRipShifter(object):
         parser = argparse.ArgumentParser(description=self.DESCRIPTION, formatter_class=argparse.RawTextHelpFormatter)
         parser.add_argument('-i', '--in-place', action='store_true', dest='in_place',
             help="Edit file in-place, saving a backup as file.bak (do not works for the split command)")
-        parser.add_argument('-e', '--output-encoding', metavar='encoding', action='store', dest='output_encoding',
+        parser.add_argument('-e', '--output-encoding', metavar=underline('encoding'), action='store', dest='output_encoding',
             type=self.parse_encoding, help=self.ENCODING_HELP)
         parser.add_argument('-v', '--version', action='version', version='%%(prog)s %s' % VERSION_STRING)
         subparsers = parser.add_subparsers(title='commands')
 
         shift_parser = subparsers.add_parser('shift', help="Shift subtitles by specified time offset", epilog=self.SHIFT_EPILOG, formatter_class=argparse.RawTextHelpFormatter)
-        shift_parser.add_argument('time_offset', action='store', metavar='offset',
+        shift_parser.add_argument('time_offset', action='store', metavar=underline('offset'),
             type=self.parse_time, help=self.TIMESTAMP_HELP)
         shift_parser.set_defaults(action=self.shift)
 
         rate_parser = subparsers.add_parser('rate', help="Convert subtitles from a frame rate to another", epilog=self.RATE_EPILOG, formatter_class=argparse.RawTextHelpFormatter)
-        rate_parser.add_argument('initial', action='store', type=float, help=self.FRAME_RATE_HELP)
-        rate_parser.add_argument('final', action='store', type=float, help=self.FRAME_RATE_HELP)
+        rate_parser.add_argument(underline('initial'), action='store', type=float, help=self.FRAME_RATE_HELP)
+        rate_parser.add_argument(underline('final'), action='store', type=float, help=self.FRAME_RATE_HELP)
         rate_parser.set_defaults(action=self.rate)
 
         split_parser = subparsers.add_parser('split', help="Split a file in multiple parts", epilog=self.SPLIT_EPILOG, formatter_class=argparse.RawTextHelpFormatter)
-        split_parser.add_argument('limits', action='store', nargs='+', type=self.parse_time, help=self.LIMITS_HELP)
+        split_parser.add_argument(underline('limits'), action='store', nargs='+', type=self.parse_time, help=self.LIMITS_HELP)
         split_parser.set_defaults(action=self.split)
         
         parser.add_argument('file', action='store')
