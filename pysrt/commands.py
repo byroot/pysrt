@@ -3,6 +3,7 @@
 import os
 import re
 import sys
+import codecs
 import shutil
 import argparse
 from textwrap import dedent
@@ -62,7 +63,10 @@ class SubRipShifter(object):
                 => creates movie.1.srt, movie.2.srt and movie.3.srt
     """)
     FRAME_RATE_HELP = "A frame rate in fps (commonly 23.9 or 25)"
-    
+    ENCODING_HELP = dedent("""\
+        Change file encoding. Useful for players accepting only latin1 subtitles.
+        List of supported encodings: http://docs.python.org/library/codecs.html#standard-encodings
+    """)
     def __init__(self):
         self.output_file_path = None
 
@@ -70,6 +74,8 @@ class SubRipShifter(object):
         parser = argparse.ArgumentParser(description=self.DESCRIPTION, formatter_class=argparse.RawTextHelpFormatter)
         parser.add_argument('-i', '--in-place', action='store_true', dest='in_place',
             help="Edit file in-place, saving a backup as file.bak (do not works for the split command)")
+        parser.add_argument('-e', '--output-encoding', metavar='encoding', action='store', dest='output_encoding',
+            type=self.parse_encoding, help=self.ENCODING_HELP)
         parser.add_argument('-v', '--version', action='version', version='%%(prog)s %s' % VERSION_STRING)
         subparsers = parser.add_subparsers(title='commands')
 
@@ -105,15 +111,23 @@ class SubRipShifter(object):
                         in self.RE_TIME_STRING.findall(time_string))
         return -ordinal if negative else ordinal
 
+    def parse_encoding(self, encoding_name):
+        print encoding_name
+        try:
+            codecs.lookup(encoding_name)
+        except LookupError, error:
+            raise argparse.ArgumentTypeError(error.message)
+        return encoding_name
+
     def shift(self):
         self.input_file.shift(milliseconds=self.arguments.time_offset)
-        self.input_file.write_into(self.output_file, encoding=self.output_encoding)
+        self.input_file.write_into(self.output_file)
         self.output_file.close()
 
     def rate(self):
         ratio = self.arguments.final / self.arguments.initial
         self.input_file.shift(ratio=ratio)
-        self.input_file.write_into(self.output_file, encoding=self.output_encoding)
+        self.input_file.write_into(self.output_file)
         self.output_file.close()
 
     def split(self):
@@ -124,7 +138,7 @@ class SubRipShifter(object):
             part_file = self.input_file.slice(ends_after=start, starts_before=end)
             part_file.shift(milliseconds=-start)
             part_file.clean_indexes()
-            part_file.save(path=file_name)
+            part_file.save(path=file_name, encoding=self.output_encoding)
 
     def create_backup(self):
         backup_file = self.arguments.file + self.BACKUP_EXTENSION
@@ -135,8 +149,7 @@ class SubRipShifter(object):
 
     @property
     def output_encoding(self):
-        # TODO: add an option to change encoding
-        return self.input_file.encoding
+        return self.arguments.output_encoding or self.input_file.encoding
 
     @property
     def input_file(self):
@@ -150,7 +163,7 @@ class SubRipShifter(object):
     def output_file(self):
         if not hasattr(self, '_output_file'):
             if self.output_file_path:
-                self._output_file = open(self.output_file_path, 'w+')
+                self._output_file = codecs.open(self.output_file_path, 'w+', encoding=self.output_encoding)
             else:
                 self._output_file = sys.stdout
         return self._output_file
