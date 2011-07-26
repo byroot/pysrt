@@ -8,7 +8,7 @@ import argparse
 from textwrap import dedent
 
 from chardet import detect
-from pysrt import SubRipFile, SubRipTime
+from pysrt import SubRipFile, SubRipTime, VERSION_STRING
 
 
 class SubRipShifter(object):
@@ -70,7 +70,7 @@ class SubRipShifter(object):
         parser = argparse.ArgumentParser(description=self.DESCRIPTION, formatter_class=argparse.RawTextHelpFormatter)
         parser.add_argument('-i', action='store_true', dest='in_place',
             help="Edit file in-place, saving a backup as file.bak (do not works for the split command)")
-
+        parser.add_argument('-v', '--version', action='version', version='%%(prog)s %s' % VERSION_STRING)
         subparsers = parser.add_subparsers(title='commands')
 
         shift_parser = subparsers.add_parser('shift', help="Shift subtitles by specified time offset", epilog=self.SHIFT_EPILOG, formatter_class=argparse.RawTextHelpFormatter)

@@ -19,7 +19,7 @@ if sys.version_info < (2, 7):
     REQUIRES.append('argparse')
 
 setup(name='pysrt',
-      version='.'.join(str(i) for i in pysrt.VERSION),
+      version=pysrt.VERSION_STRING,
       author='Jean Boussier',
       author_email='jean.boussier@gmail.com',
       packages=find_packages(),
