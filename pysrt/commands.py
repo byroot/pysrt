@@ -68,7 +68,7 @@ class SubRipShifter(object):
 
     def build_parser(self):
         parser = argparse.ArgumentParser(description=self.DESCRIPTION, formatter_class=argparse.RawTextHelpFormatter)
-        parser.add_argument('-i', action='store_true', dest='in_place',
+        parser.add_argument('-i', '--in-place', action='store_true', dest='in_place',
             help="Edit file in-place, saving a backup as file.bak (do not works for the split command)")
         parser.add_argument('-v', '--version', action='version', version='%%(prog)s %s' % VERSION_STRING)
         subparsers = parser.add_subparsers(title='commands')
