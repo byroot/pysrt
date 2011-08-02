@@ -78,6 +78,8 @@ class TestSerialAndParsing(unittest.TestCase):
         self.bad_string = u'foobar'
         self.coordinates = (u'1\n00:01:00,000 --> 00:01:20,000 X1:000 X2:000 '
                                 'Y1:050 Y2:100\nHello world !\n')
+        self.vtt = (u'1\n00:01:00,000 --> 00:01:20,000 D:vertical A:start '
+                                'L:12%\nHello world !\n')
         self.dots = u'1\n00:01:00.000 --> 00:01:20.000\nHello world !\n'
 
     def test_serialization(self):
@@ -89,7 +91,21 @@ class TestSerialAndParsing(unittest.TestCase):
             self.bad_string)
 
     def test_coordinates(self):
-        self.assertEquals(SubRipItem.from_string(self.coordinates), self.item)
+        item = SubRipItem.from_string(self.coordinates)
+        self.assertEquals(item, self.item)
+        self.assertEquals(item.position, 'X1:000 X2:000 Y1:050 Y2:100')
+
+    def test_vtt_positioning(self):
+        vtt = SubRipItem.from_string(self.vtt)
+        self.assertEquals(vtt.position, 'D:vertical A:start L:12%')
+        self.assertEquals(vtt.index, 1)
+        self.assertEquals(vtt.text, 'Hello world !\n')
+
+    def test_idempotence(self):
+        vtt = SubRipItem.from_string(self.vtt)
+        self.assertEquals(unicode(vtt), self.vtt + '\n')
+        item = SubRipItem.from_string(self.coordinates)
+        self.assertEquals(unicode(item), self.coordinates + '\n')
 
     def test_dots(self):
         self.assertEquals(SubRipItem.from_string(self.dots), self.item)

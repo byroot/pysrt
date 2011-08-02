@@ -232,3 +232,4 @@ class TestIntegration(unittest.TestCase):
         path = os.path.join(self.base_path, 'capability_tester.srt')
         file = SubRipFile.open(path)
         self.assertEquals(len(file), 37)
+

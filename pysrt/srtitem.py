@@ -10,28 +10,31 @@ from pysrt.srttime import SubRipTime
 
 class SubRipItem(object):
     """
-    SubRipItem(index, start, end, text)
+    SubRipItem(index, start, end, text, position)
 
     index -> int: index of item in file. 0 by default.
     start, end -> SubRipTime or coercible.
     text -> unicode: text content for item.
+    position -> unicode: raw srt/vtt "display coordinates" string
     """
     TIME_PATTERN = r'\d{2}:\d{2}:\d{2}[,\.]\d{3}'
     ITEM_PATTERN = r'''\A(?P<index>\d+)$
-^(?P<start>%(time)s)\s-->\s(?P<end>%(time)s)[\ XY\:\d]*$
+^(?P<start>%(time)s)\s-->\s(?P<end>%(time)s)[\ ]?(?P<position>[\d\w\ \:%%]*)$
 ^(?P<text>.*)\Z''' % {'time': TIME_PATTERN}
     RE_ITEM = re.compile(ITEM_PATTERN, re.DOTALL | re.MULTILINE)
-    ITEM_PATTERN = u'%s\n%s --> %s\n%s\n'
+    ITEM_PATTERN = u'%s\n%s --> %s%s\n%s\n'
 
-    def __init__(self, index=0, start=None, end=None, text='', **kwargs):
+    def __init__(self, index=0, start=None, end=None, text=u'', position=u''):
         self.index = int(index)
         self.start = SubRipTime.coerce(start or 0)
         self.end = SubRipTime.coerce(end or 0)
+        self.position = unicode(position)
         self.text = unicode(text)
 
     def __unicode__(self):
+        position = ' %s' % self.position if self.position.strip() else ''
         return self.ITEM_PATTERN % (self.index, self.start, self.end,
-                                    self.text)
+                                    position, self.text)
 
     def __cmp__(self, other):
         return cmp(self.start, other.start) \
