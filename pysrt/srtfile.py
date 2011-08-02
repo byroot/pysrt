@@ -104,6 +104,12 @@ class SubRipFile(UserList, object):
             item.shift(*args, **kwargs)
 
     def clean_indexes(self):
+        """
+        clean_indexes()
+
+        Sort subs and reset their index attribute. Should be called after
+        destructive operations like split or such.
+        """
         self.sort()
         for index, item in enumerate(self):
             item.index = index + 1
