@@ -89,20 +89,20 @@ class SubRipTime(Comparable):
         return self.TIME_PATTERN % tuple(self)
 
     def __cmp__(self, other):
-        return cmp(self.ordinal, self._coerce(other).ordinal)
+        return cmp(self.ordinal, self.coerce(other).ordinal)
 
     def __add__(self, other):
-        return self.from_ordinal(self.ordinal + self._coerce(other).ordinal)
+        return self.from_ordinal(self.ordinal + self.coerce(other).ordinal)
 
     def __iadd__(self, other):
-        self.ordinal += self._coerce(other).ordinal
+        self.ordinal += self.coerce(other).ordinal
         return self
 
     def __sub__(self, other):
-        return self.from_ordinal(self.ordinal - self._coerce(other).ordinal)
+        return self.from_ordinal(self.ordinal - self.coerce(other).ordinal)
 
     def __isub__(self, other):
-        self.ordinal -= self._coerce(other).ordinal
+        self.ordinal -= self.coerce(other).ordinal
         return self
 
     def __mul__(self, ratio):
@@ -113,7 +113,7 @@ class SubRipTime(Comparable):
         return self
 
     @classmethod
-    def _coerce(cls, other):
+    def coerce(cls, other):
         """
         Coerce many types to SubRipTime instance.
         Supported types:
@@ -123,6 +123,8 @@ class SubRipTime(Comparable):
           - any iterable
           - dict
         """
+        if other is None:
+            return cls()
         if isinstance(other, SubRipTime):
             return other
         elif isinstance(other, basestring):
