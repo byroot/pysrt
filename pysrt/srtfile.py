@@ -127,6 +127,12 @@ class SubRipFile(UserList, object):
 
     @classmethod
     def from_string(cls, source, **kwargs):
+        """
+        from_string(source, **kwargs) -> SubRipFile
+
+        `source` -> a unicode instance or at least a str instance encoded with
+        `sys.getdefaultencoding()`
+        """
         error_handling = kwargs.pop('error_handling', None)
         new_file = cls(**kwargs)
         new_file.read(source.splitlines(True), error_handling=error_handling)
