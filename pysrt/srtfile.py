@@ -53,119 +53,6 @@ class SubRipFile(UserList, object):
 
     eol = property(_get_eol, _set_eol)
 
-    @classmethod
-    def _handle_error(cls, error, error_handling, index):
-        if error_handling == cls.ERROR_RAISE:
-            error.args = (index, ) + error.args
-            raise error
-        if error_handling == cls.ERROR_LOG:
-            sys.stderr.write('PySRT-InvalidItem(line %s): \n' % index)
-            sys.stderr.write(error.args[0].encode('ascii', 'replace'))
-            sys.stderr.write('\n')
-
-    @classmethod
-    def open(cls, path='', encoding=None, error_handling=ERROR_PASS, eol=None):
-        """
-        open([path, [encoding]])
-
-        If you do not provide any encoding, it can be detected if the file
-        contain a bit order mark, unless it is set to utf-8 as default.
-        """
-        new_file = cls(path=path, encoding=encoding)
-        source_file = cls._open_unicode_file(path, claimed_encoding=encoding)
-        new_file.read(source_file, error_handling=error_handling)
-        eol = eol or cls._extract_newline(source_file)
-        if eol is not None:
-            new_file.eol = eol
-        source_file.close()
-        return new_file
-
-    @classmethod
-    def stream(cls, source_file, error_handling=ERROR_PASS):
-        """
-        stream(source_file, [error_handling])
-
-        This method yield SubRipItem instances a soon as they have been parsed
-        without storing them. It is a kind of SAX parser for .srt files.
-
-        `source_file` -> Any iterable that yield unicode strings, like a file
-            opened with `codecs.open()` or an array of unicode.
-
-        Example:
-            >>> from pysrt import SubRipFile
-            >>> import codecs
-            >>> file = codecs.open('movie.srt', encoding='utf-8')
-            >>> for sub in SubRipFile.stream(file):
-            ...     sub.text += "\nHello !"
-            ...     print unicode(sub)
-        """
-        string_buffer = []
-        for index, line in enumerate(chain(source_file, u'\n')):
-            if line.strip():
-                string_buffer.append(line)
-            else:
-                source = u''.join(string_buffer)
-                string_buffer = []
-                if source.strip():
-                    try:
-                        yield SubRipItem.from_string(source)
-                    except InvalidItem, error:
-                        cls._handle_error(error, error_handling, index)
-
-    def read(self, source_file, error_handling=ERROR_PASS):
-        """
-        read(source_file, [error_handling])
-
-        This method parse subtitles contained in `source_file` and append them
-        to the current instance.
-
-        `source_file` -> Any iterable that yield unicode strings, like a file
-            opened with `codecs.open()` or an array of unicode.
-        """
-        self.extend(self.stream(source_file, error_handling=error_handling))
-        return self
-
-    @staticmethod
-    def _extract_newline(file_descriptor):
-        if hasattr(file_descriptor, 'newlines') and file_descriptor.newlines:
-            if isinstance(file_descriptor.newlines, basestring):
-                return file_descriptor.newlines
-            else:
-                return file_descriptor.newlines[0]
-
-    @classmethod
-    def _detect_encoding(cls, path):
-        file_descriptor = open(path)
-        first_chars = file_descriptor.read(BIGGER_BOM)
-        file_descriptor.close()
-
-        for bom, encoding in BOMS:
-            if first_chars.startswith(bom):
-                return encoding
-
-        # TODO: maybe a chardet integration
-        return cls.DEFAULT_ENCODING
-
-    @classmethod
-    def _open_unicode_file(cls, path, claimed_encoding=None):
-        encoding = claimed_encoding or cls._detect_encoding(path)
-        source_file = codecs.open(path, 'rU', encoding=encoding)
-
-        # get rid of BOM if any
-        possible_bom = CODECS_BOMS.get(encoding, None)
-        if possible_bom:
-            file_bom = source_file.read(len(possible_bom))
-            if not file_bom == possible_bom:
-                source_file.seek(0) # if not rewind
-        return source_file
-
-    @classmethod
-    def from_string(cls, source, **kwargs):
-        error_handling = kwargs.pop('error_handling', None)
-        new_file = cls(**kwargs)
-        new_file.read(source.splitlines(True), error_handling=error_handling)
-        return new_file
-
     def slice(self, starts_before=None, starts_after=None, ends_before=None,
               ends_after=None):
         """
@@ -221,6 +108,75 @@ class SubRipFile(UserList, object):
         for index, item in enumerate(self):
             item.index = index + 1
 
+    @classmethod
+    def open(cls, path='', encoding=None, error_handling=ERROR_PASS, eol=None):
+        """
+        open([path, [encoding]])
+
+        If you do not provide any encoding, it can be detected if the file
+        contain a bit order mark, unless it is set to utf-8 as default.
+        """
+        new_file = cls(path=path, encoding=encoding)
+        source_file = cls._open_unicode_file(path, claimed_encoding=encoding)
+        new_file.read(source_file, error_handling=error_handling)
+        eol = eol or cls._extract_newline(source_file)
+        if eol is not None:
+            new_file.eol = eol
+        source_file.close()
+        return new_file
+
+    @classmethod
+    def from_string(cls, source, **kwargs):
+        error_handling = kwargs.pop('error_handling', None)
+        new_file = cls(**kwargs)
+        new_file.read(source.splitlines(True), error_handling=error_handling)
+        return new_file
+
+    def read(self, source_file, error_handling=ERROR_PASS):
+        """
+        read(source_file, [error_handling])
+
+        This method parse subtitles contained in `source_file` and append them
+        to the current instance.
+
+        `source_file` -> Any iterable that yield unicode strings, like a file
+            opened with `codecs.open()` or an array of unicode.
+        """
+        self.extend(self.stream(source_file, error_handling=error_handling))
+        return self
+
+    @classmethod
+    def stream(cls, source_file, error_handling=ERROR_PASS):
+        """
+        stream(source_file, [error_handling])
+
+        This method yield SubRipItem instances a soon as they have been parsed
+        without storing them. It is a kind of SAX parser for .srt files.
+
+        `source_file` -> Any iterable that yield unicode strings, like a file
+            opened with `codecs.open()` or an array of unicode.
+
+        Example:
+            >>> from pysrt import SubRipFile
+            >>> import codecs
+            >>> file = codecs.open('movie.srt', encoding='utf-8')
+            >>> for sub in SubRipFile.stream(file):
+            ...     sub.text += "\nHello !"
+            ...     print unicode(sub)
+        """
+        string_buffer = []
+        for index, line in enumerate(chain(source_file, u'\n')):
+            if line.strip():
+                string_buffer.append(line)
+            else:
+                source = u''.join(string_buffer)
+                string_buffer = []
+                if source.strip():
+                    try:
+                        yield SubRipItem.from_string(source)
+                    except InvalidItem, error:
+                        cls._handle_error(error, error_handling, index)
+
     def save(self, path=None, encoding=None, eol=None):
         """
         save([path][, encoding][, eol])
@@ -252,3 +208,47 @@ class SubRipFile(UserList, object):
             if output_eol != '\n':
                 string_repr = string_repr.replace('\n', output_eol)
             output_file.write(string_repr)
+
+    @staticmethod
+    def _extract_newline(file_descriptor):
+        if hasattr(file_descriptor, 'newlines') and file_descriptor.newlines:
+            if isinstance(file_descriptor.newlines, basestring):
+                return file_descriptor.newlines
+            else:
+                return file_descriptor.newlines[0]
+
+    @classmethod
+    def _detect_encoding(cls, path):
+        file_descriptor = open(path)
+        first_chars = file_descriptor.read(BIGGER_BOM)
+        file_descriptor.close()
+
+        for bom, encoding in BOMS:
+            if first_chars.startswith(bom):
+                return encoding
+
+        # TODO: maybe a chardet integration
+        return cls.DEFAULT_ENCODING
+
+    @classmethod
+    def _open_unicode_file(cls, path, claimed_encoding=None):
+        encoding = claimed_encoding or cls._detect_encoding(path)
+        source_file = codecs.open(path, 'rU', encoding=encoding)
+
+        # get rid of BOM if any
+        possible_bom = CODECS_BOMS.get(encoding, None)
+        if possible_bom:
+            file_bom = source_file.read(len(possible_bom))
+            if not file_bom == possible_bom:
+                source_file.seek(0) # if not rewind
+        return source_file
+
+    @classmethod
+    def _handle_error(cls, error, error_handling, index):
+        if error_handling == cls.ERROR_RAISE:
+            error.args = (index, ) + error.args
+            raise error
+        if error_handling == cls.ERROR_LOG:
+            sys.stderr.write('PySRT-InvalidItem(line %s): \n' % index)
+            sys.stderr.write(error.args[0].encode('ascii', 'replace'))
+            sys.stderr.write('\n')
