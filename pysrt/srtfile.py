@@ -9,6 +9,14 @@ from copy import copy
 from pysrt.srtexc import InvalidItem
 from pysrt.srtitem import SubRipItem
 
+BOMS = ((codecs.BOM_UTF32_LE, 'utf_32_le'),
+        (codecs.BOM_UTF32_BE, 'utf_32_be'),
+        (codecs.BOM_UTF16_LE, 'utf_16_le'),
+        (codecs.BOM_UTF16_BE, 'utf_16_be'),
+        (codecs.BOM_UTF8, 'utf_8'))
+CODECS_BOMS = dict((codec, unicode(bom, codec)) for bom, codec in BOMS)
+BIGGER_BOM = max(len(bom) for bom, encoding in BOMS)
+
 
 class SubRipFile(UserList, object):
     """
@@ -30,14 +38,6 @@ class SubRipFile(UserList, object):
     ERROR_RAISE = 2
 
     DEFAULT_ENCODING = 'utf_8'
-
-    BOMS = ((codecs.BOM_UTF32_LE, 'utf_32_le'),
-            (codecs.BOM_UTF32_BE, 'utf_32_be'),
-            (codecs.BOM_UTF16_LE, 'utf_16_le'),
-            (codecs.BOM_UTF16_BE, 'utf_16_be'),
-            (codecs.BOM_UTF8, 'utf_8'))
-    CODECS_BOMS = dict((codec, unicode(bom, codec)) for bom, codec in BOMS)
-    BIGGER_BOM = max(len(bom) for bom, encoding in BOMS)
 
     def __init__(self, items=None, eol=None, path=None, encoding='utf-8'):
         UserList.__init__(self, items or [])
@@ -136,10 +136,10 @@ class SubRipFile(UserList, object):
     @classmethod
     def _detect_encoding(cls, path):
         file_descriptor = open(path)
-        first_chars = file_descriptor.read(cls.BIGGER_BOM)
+        first_chars = file_descriptor.read(BIGGER_BOM)
         file_descriptor.close()
 
-        for bom, encoding in cls.BOMS:
+        for bom, encoding in BOMS:
             if first_chars.startswith(bom):
                 return encoding
 
@@ -152,7 +152,7 @@ class SubRipFile(UserList, object):
         source_file = codecs.open(path, 'rU', encoding=encoding)
 
         # get rid of BOM if any
-        possible_bom = cls.CODECS_BOMS.get(encoding, None)
+        possible_bom = CODECS_BOMS.get(encoding, None)
         if possible_bom:
             file_bom = source_file.read(len(possible_bom))
             if not file_bom == possible_bom:
