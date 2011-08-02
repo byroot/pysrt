@@ -123,15 +123,13 @@ class SubRipTime(Comparable):
           - any iterable
           - dict
         """
-        if other is None:
-            return cls()
         if isinstance(other, SubRipTime):
             return other
-        elif isinstance(other, basestring):
+        if isinstance(other, basestring):
             return cls.from_string(other)
-        elif isinstance(other, (int, long)):
+        if isinstance(other, (int, long)):
             return cls.from_ordinal(other)
-        elif isinstance(other, time):
+        if isinstance(other, time):
             return cls.from_time(other)
         try:
             return cls(**other)
