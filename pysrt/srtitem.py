@@ -11,11 +11,11 @@ from pysrt.srttime import SubRipTime
 
 class SubRipItem(object):
     """
-    SubRipItem(sub_id, start, end, sub_title)
+    SubRipItem(index, start, end, text)
 
-    sub_id -> int: index of item in file. 0 by default.
+    index -> int: index of item in file. 0 by default.
     start, end -> SubRipTime or coercible.
-    sub_title -> unicode: text content for item.
+    text -> unicode: text content for item.
     """
     TIME_PATTERN = r'\d{2}:\d{2}:\d{2}[,\.]\d{3}'
     ITEM_PATTERN = r'''\A(?P<index>\d+)$
