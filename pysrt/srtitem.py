@@ -2,7 +2,6 @@
 """
 SubRip's subtitle parser
 """
-import os
 import re
 
 from pysrt.srtexc import InvalidItem
