@@ -18,10 +18,14 @@ class SubRipItem(object):
     text -> unicode: text content for item.
     """
     TIME_PATTERN = r'\d{2}:\d{2}:\d{2}[,\.]\d{3}'
-    ITEM_PATTERN = r'''\A(?P<index>\d+)$
-^(?P<start>%(time)s)\s-->\s(?P<end>%(time)s)[\ XY\:\d]*$
-^(?P<text>.*)\Z''' % {'time': TIME_PATTERN}
+
+    ITEM_PATTERN = (
+        r'\A(?P<index>\d+)$'
+        r'^(?P<start>%(time)s)\s-->\s(?P<end>%(time)s)[\ XY\:\d]*$'
+        r'^(?P<text>.*)\Z') % {'time': TIME_PATTERN}
+
     RE_ITEM = re.compile(ITEM_PATTERN, re.DOTALL | re.MULTILINE)
+
     ITEM_PATTERN = u'%s\n%s --> %s\n%s\n'
 
     def __init__(self, index=0, start=None, end=None, text='', **kwargs):
