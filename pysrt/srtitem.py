@@ -17,10 +17,12 @@ class SubRipItem(object):
     start, end -> SubRipTime or coercable.
     sub_title -> unicode: text content for item.
     """
-    RE_ITEM = re.compile(r'''(?P<index>\d+)
-(?P<start>\d{2}:\d{2}:\d{2}[,\.]\d{3}) --> (?P<end>\d{2}:\d{2}:\d{2}[,\.]\d{3})[\ XY\:\d]*
-(?P<text>.*)''', re.DOTALL)
-    ITEM_PATTERN = u'%s\n%s --> %s\n%s\n'.replace('\n', os.linesep)
+    TIME_PATTERN = r'\d{2}:\d{2}:\d{2}[,\.]\d{3}'
+    ITEM_PATTERN = r'''\A(?P<index>\d+)$
+^(?P<start>%(time)s)\s-->\s(?P<end>%(time)s)[\ XY\:\d]*$
+^(?P<text>.*)\Z''' % {'time': TIME_PATTERN}
+    RE_ITEM = re.compile(ITEM_PATTERN, re.DOTALL | re.MULTILINE)
+    ITEM_PATTERN = u'%s\n%s --> %s\n%s\n'
 
     def __init__(self, index=0, start=None, end=None, text='', **kwargs):
         self.index = int(index)
