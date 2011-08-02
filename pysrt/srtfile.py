@@ -219,11 +219,19 @@ class SubRipFile(UserList, object):
         self.write_into(save_file, eol=eol)
         save_file.close()
 
-    def write_into(self, io, eol=None):
+    def write_into(self, output_file, eol=None):
+        """
+        write_into(output_file [, eol])
+
+        Serialize current state into `output_file`.
+        
+        `output_file` -> Any instance that respond to `write()`, typically a
+        file object
+        """
         output_eol = eol or self.eol
 
         for item in self:
             string_repr = unicode(item)
             if output_eol != '\n':
                 string_repr = string_repr.replace('\n', output_eol)
-            io.write(string_repr)
+            output_file.write(string_repr)
