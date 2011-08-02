@@ -5,10 +5,6 @@ import codecs
 from UserList import UserList
 from itertools import chain
 from copy import copy
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
 
 from pysrt.srtexc import InvalidItem
 from pysrt.srtitem import SubRipItem
