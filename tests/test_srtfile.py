@@ -43,16 +43,15 @@ class TestOpen(unittest.TestCase):
             SubRipFile.open(self.invalid_path,
                 error_handling=SubRipFile.ERROR_RAISE)
         except Exception, exc:
-            self.assertEquals(exc.args, (
-                self.invalid_path, 3,
+            self.assertEquals(exc.args, (3,
                 u'1\n00:00:01 --> 00:00:10\nThis subtitle is invalid\n'))
 
         sys.stderr = StringIO()
         srt_file = SubRipFile.open(self.invalid_path,
             error_handling=SubRipFile.ERROR_LOG)
         sys.stderr.seek(0)
-        self.assertEquals(sys.stderr.read(), 'PySRT-InvalidItem(%s:3): \n1\n00:'
-            '00:01 --> 00:00:10\nThis subtitle is invalid\n\n' % self.invalid_path)
+        self.assertEquals(sys.stderr.read(), 'PySRT-InvalidItem(line 3): \n1\n00:'
+            '00:01 --> 00:00:10\nThis subtitle is invalid\n\n')
 
 
 class TestFromString(unittest.TestCase):
