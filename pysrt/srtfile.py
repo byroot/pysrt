@@ -168,6 +168,23 @@ class SubRipFile(UserList, object):
 
     def slice(self, starts_before=None, starts_after=None, ends_before=None,
               ends_after=None):
+        """
+        slice([starts_before][, starts_after][, ends_before][, ends_after]) \
+-> SubRipFile clone
+
+        All arguments are optional, and should be coercible to SubRipTime
+        object.
+
+        It reduce the set of subtitles to those that match match given time
+        constraints.
+
+        The returned set is a clone, but still contains references to original
+        subtitles. So if you shift this returned set, subs contained in the
+        original SubRipFile instance will be altered too.
+
+        Example:
+            >>> subs.slice(ends_after={'seconds': 20}).shift(seconds=2)
+        """
         clone = copy(self)
 
         if starts_before:
@@ -224,7 +241,7 @@ class SubRipFile(UserList, object):
         write_into(output_file [, eol])
 
         Serialize current state into `output_file`.
-        
+
         `output_file` -> Any instance that respond to `write()`, typically a
         file object
         """
