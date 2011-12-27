@@ -125,9 +125,6 @@ class SubRipFile(UserList, object):
         new_file = cls(path=path, encoding=encoding)
         source_file = cls._open_unicode_file(path, claimed_encoding=encoding)
         new_file.read(source_file, error_handling=error_handling)
-        eol = eol or cls._extract_newline(source_file)
-        if eol is not None:
-            new_file.eol = eol
         source_file.close()
         return new_file
 
@@ -154,6 +151,7 @@ class SubRipFile(UserList, object):
         `source_file` -> Any iterable that yield unicode strings, like a file
             opened with `codecs.open()` or an array of unicode.
         """
+        self.eol = self._guess_eol(source_file)
         self.extend(self.stream(source_file, error_handling=error_handling))
         return self
 
@@ -221,13 +219,25 @@ class SubRipFile(UserList, object):
                 string_repr = string_repr.replace('\n', output_eol)
             output_file.write(string_repr)
 
-    @staticmethod
-    def _extract_newline(file_descriptor):
-        if hasattr(file_descriptor, 'newlines') and file_descriptor.newlines:
-            if isinstance(file_descriptor.newlines, basestring):
-                return file_descriptor.newlines
-            else:
-                return file_descriptor.newlines[0]
+    @classmethod
+    def _guess_eol(cls, string_iterable):
+        first_line = cls._get_first_line(string_iterable)
+        for eol in ('\r\n', '\r', '\n'):
+            if first_line.endswith(eol):
+                return eol
+        return os.linesep
+
+    @classmethod
+    def _get_first_line(cls, string_iterable):
+        if hasattr(string_iterable, 'tell'):
+            previous_position = string_iterable.tell()
+
+        first_line = iter(string_iterable).next()
+
+        if hasattr(string_iterable, 'seek'):
+            string_iterable.seek(previous_position)
+
+        return first_line
 
     @classmethod
     def _detect_encoding(cls, path):
@@ -252,7 +262,7 @@ class SubRipFile(UserList, object):
         if possible_bom:
             file_bom = source_file.read(len(possible_bom))
             if not file_bom == possible_bom:
-                source_file.seek(0) # if not rewind
+                source_file.seek(0)  # if not rewind
         return source_file
 
     @classmethod
