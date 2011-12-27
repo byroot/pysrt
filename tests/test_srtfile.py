@@ -13,7 +13,8 @@ from StringIO import StringIO
 file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, os.path.abspath(file_path))
 
-from pysrt import SubRipFile, SubRipItem, SubRipTime, InvalidItem
+import pysrt
+from pysrt import SubRipFile, SubRipItem, SubRipTime
 
 
 class TestOpen(unittest.TestCase):
@@ -37,21 +38,8 @@ class TestOpen(unittest.TestCase):
             self.utf8_path, encoding='ascii')
 
     def test_error_handling(self):
-        self.assertRaises(InvalidItem, SubRipFile.open, self.invalid_path,
+        self.assertRaises(pysrt.Error, SubRipFile.open, self.invalid_path,
             error_handling=SubRipFile.ERROR_RAISE)
-        try:
-            SubRipFile.open(self.invalid_path,
-                error_handling=SubRipFile.ERROR_RAISE)
-        except Exception, exc:
-            self.assertEquals(exc.args, (3,
-                u'1\n00:00:01 --> 00:00:10\nThis subtitle is invalid\n'))
-
-        sys.stderr = StringIO()
-        srt_file = SubRipFile.open(self.invalid_path,
-            error_handling=SubRipFile.ERROR_LOG)
-        sys.stderr.seek(0)
-        self.assertEquals(sys.stderr.read(), 'PySRT-InvalidItem(line 3): \n1\n00:'
-            '00:01 --> 00:00:10\nThis subtitle is invalid\n\n')
 
 
 class TestFromString(unittest.TestCase):

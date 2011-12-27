@@ -6,7 +6,7 @@ from UserList import UserList
 from itertools import chain
 from copy import copy
 
-from pysrt.srtexc import InvalidItem
+from pysrt.srtexc import Error
 from pysrt.srtitem import SubRipItem
 
 BOMS = ((codecs.BOM_UTF32_LE, 'utf_32_le'),
@@ -179,12 +179,13 @@ class SubRipFile(UserList, object):
             if line.strip():
                 string_buffer.append(line)
             else:
-                source = u''.join(string_buffer)
+                source = string_buffer
                 string_buffer = []
-                if source.strip():
+                if all(source):
                     try:
-                        yield SubRipItem.from_string(source)
-                    except InvalidItem, error:
+                        yield SubRipItem.from_lines(source)
+                    except Error, error:
+                        error.args += (''.join(source), )
                         cls._handle_error(error, error_handling, index)
 
     def save(self, path=None, encoding=None, eol=None):
@@ -271,6 +272,7 @@ class SubRipFile(UserList, object):
             error.args = (index, ) + error.args
             raise error
         if error_handling == cls.ERROR_LOG:
-            sys.stderr.write('PySRT-InvalidItem(line %s): \n' % index)
+            name = type(error).__name__
+            sys.stderr.write('PySRT-%s(line %s): \n' % (name, index))
             sys.stderr.write(error.args[0].encode('ascii', 'replace'))
             sys.stderr.write('\n')

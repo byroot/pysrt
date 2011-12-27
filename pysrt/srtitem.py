@@ -17,11 +17,6 @@ class SubRipItem(object):
     text -> unicode: text content for item.
     position -> unicode: raw srt/vtt "display coordinates" string
     """
-    TIME_PATTERN = r'\d{2}:\d{2}:\d{2}[,\.]\d{3}'
-    ITEM_PATTERN = r'''\A(?P<index>\d+)$
-^(?P<start>%(time)s)\s-->\s(?P<end>%(time)s)[\ ]?(?P<position>[\d\w\ \:%%]*)$
-^(?P<text>.*)\Z''' % {'time': TIME_PATTERN}
-    RE_ITEM = re.compile(ITEM_PATTERN, re.DOTALL | re.MULTILINE)
     ITEM_PATTERN = u'%s\n%s --> %s%s\n%s\n'
 
     def __init__(self, index=0, start=None, end=None, text=u'', position=u''):
@@ -52,11 +47,22 @@ class SubRipItem(object):
 
     @classmethod
     def from_string(cls, source):
-        match = cls.RE_ITEM.match(source.replace('\r', ''))
-        if not match:
-            raise InvalidItem(source)
+        return cls.from_lines(source.splitlines(True))
 
-        data = dict(match.groupdict())
-        for group in ('start', 'end'):
-            data[group] = SubRipTime.from_string(data[group])
-        return cls(**data)
+    @classmethod
+    def from_lines(cls, lines):
+        if len(lines) < 3:
+            raise InvalidItem()
+        lines = [l.replace('\r', '') for l in lines]
+        index = lines[0]
+        start, end, position = cls.split_timestamps(lines[1])
+        body = u''.join(lines[2:])
+        return cls(index, start, end, body, position)
+
+    @staticmethod
+    def split_timestamps(line):
+        start, end_and_position = line.split('-->')
+        end_and_position = end_and_position.lstrip().split(' ', 1)
+        end = end_and_position[0]
+        position = end_and_position[1] if len(end_and_position) > 1 else ''
+        return (s.strip() for s in (start, end, position))
