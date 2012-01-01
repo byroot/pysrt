@@ -181,7 +181,7 @@ class SubRipFile(UserList, object):
             else:
                 source = string_buffer
                 string_buffer = []
-                if all(source):
+                if source and all(source):
                     try:
                         yield SubRipItem.from_lines(source)
                     except Error, error:
@@ -192,9 +192,9 @@ class SubRipFile(UserList, object):
         """
         save([path][, encoding][, eol])
 
-        Use init path if no other provided.
-        Use init encoding if no other provided.
-        Use init eol if no other provided.
+        Use initial path if no other provided.
+        Use initial encoding if no other provided.
+        Use initial eol if no other provided.
         """
         path = path or self.path
         encoding = encoding or self.encoding
@@ -233,8 +233,10 @@ class SubRipFile(UserList, object):
         if hasattr(string_iterable, 'tell'):
             previous_position = string_iterable.tell()
 
-        first_line = iter(string_iterable).next()
-
+        try:
+            first_line = iter(string_iterable).next()
+        except StopIteration:
+            return ''
         if hasattr(string_iterable, 'seek'):
             string_iterable.seek(previous_position)
 
