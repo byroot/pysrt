@@ -51,10 +51,10 @@ class SubRipItem(object):
     def from_lines(cls, lines):
         if len(lines) < 3:
             raise InvalidItem()
-        lines = [l.replace('\r', '') for l in lines]
+        lines = [l.rstrip() for l in lines]
         index = lines[0]
         start, end, position = cls.split_timestamps(lines[1])
-        body = u''.join(lines[2:])
+        body = u'\n'.join(lines[2:])
         return cls(index, start, end, body, position)
 
     @staticmethod
