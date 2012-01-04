@@ -219,6 +219,12 @@ class SubRipFile(UserList, object):
             if output_eol != '\n':
                 string_repr = string_repr.replace('\n', output_eol)
             output_file.write(string_repr)
+            # Only add trailing eol if it's not already present.
+            # It was kept in the SubRipItem's text before but it really
+            # belongs here. Existing applications might give us subtitles
+            # which already contain a trailing eol though.
+            if not string_repr.endswith(2 * output_eol):
+                output_file.write(output_eol)
 
     @classmethod
     def _guess_eol(cls, string_iterable):

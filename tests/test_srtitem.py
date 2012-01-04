@@ -99,13 +99,13 @@ class TestSerialAndParsing(unittest.TestCase):
         vtt = SubRipItem.from_string(self.vtt)
         self.assertEquals(vtt.position, 'D:vertical A:start L:12%')
         self.assertEquals(vtt.index, 1)
-        self.assertEquals(vtt.text, 'Hello world !\n')
+        self.assertEquals(vtt.text, 'Hello world !')
 
     def test_idempotence(self):
         vtt = SubRipItem.from_string(self.vtt)
-        self.assertEquals(unicode(vtt), self.vtt + '\n')
+        self.assertEquals(unicode(vtt), self.vtt)
         item = SubRipItem.from_string(self.coordinates)
-        self.assertEquals(unicode(item), self.coordinates + '\n')
+        self.assertEquals(unicode(item), self.coordinates)
 
     def test_dots(self):
         self.assertEquals(SubRipItem.from_string(self.dots), self.item)
