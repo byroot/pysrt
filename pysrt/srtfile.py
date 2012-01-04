@@ -115,7 +115,7 @@ class SubRipFile(UserList, object):
             item.index = index + 1
 
     @classmethod
-    def open(cls, path='', encoding=None, error_handling=ERROR_PASS, eol=None):
+    def open(cls, path='', encoding=None, error_handling=ERROR_PASS):
         """
         open([path, [encoding]])
 
