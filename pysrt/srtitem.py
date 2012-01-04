@@ -2,8 +2,6 @@
 """
 SubRip's subtitle parser
 """
-import re
-
 from pysrt.srtexc import InvalidItem
 from pysrt.srttime import SubRipTime
 
