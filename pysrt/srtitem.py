@@ -4,9 +4,10 @@ SubRip's subtitle parser
 """
 from pysrt.srtexc import InvalidItem
 from pysrt.srttime import SubRipTime
+from pysrt.comparablemixin import ComparableMixin
 
 
-class SubRipItem(object):
+class SubRipItem(ComparableMixin):
     """
     SubRipItem(index, start, end, text, position)
 
@@ -15,23 +16,22 @@ class SubRipItem(object):
     text -> unicode: text content for item.
     position -> unicode: raw srt/vtt "display coordinates" string
     """
-    ITEM_PATTERN = u'%s\n%s --> %s%s\n%s\n'
+    ITEM_PATTERN = '%s\n%s --> %s%s\n%s\n'
 
-    def __init__(self, index=0, start=None, end=None, text=u'', position=u''):
+    def __init__(self, index=0, start=None, end=None, text='', position=''):
         self.index = int(index)
         self.start = SubRipTime.coerce(start or 0)
         self.end = SubRipTime.coerce(end or 0)
-        self.position = unicode(position)
-        self.text = unicode(text)
+        self.position = str(position)
+        self.text = str(text)
 
-    def __unicode__(self):
+    def __str__(self):
         position = ' %s' % self.position if self.position.strip() else ''
         return self.ITEM_PATTERN % (self.index, self.start, self.end,
                                     position, self.text)
 
-    def __cmp__(self, other):
-        return cmp(self.start, other.start) \
-            or cmp(self.end, other.end)
+    def _cmpkey(self):
+        return (self.start, self.end)
 
     def shift(self, *args, **kwargs):
         """
@@ -54,7 +54,7 @@ class SubRipItem(object):
         lines = [l.rstrip() for l in lines]
         index = lines[0]
         start, end, position = cls.split_timestamps(lines[1])
-        body = u'\n'.join(lines[2:])
+        body = '\n'.join(lines[2:])
         return cls(index, start, end, body, position)
 
     @staticmethod

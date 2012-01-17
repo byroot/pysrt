@@ -2,7 +2,7 @@
 import os
 import sys
 import codecs
-from UserList import UserList
+from collections import UserList
 from itertools import chain
 from copy import copy
 
@@ -14,7 +14,7 @@ BOMS = ((codecs.BOM_UTF32_LE, 'utf_32_le'),
         (codecs.BOM_UTF16_LE, 'utf_16_le'),
         (codecs.BOM_UTF16_BE, 'utf_16_be'),
         (codecs.BOM_UTF8, 'utf_8'))
-CODECS_BOMS = dict((codec, unicode(bom, codec)) for bom, codec in BOMS)
+CODECS_BOMS = dict((codec, str(bom, codec)) for bom, codec in BOMS)
 BIGGER_BOM = max(len(bom) for bom, encoding in BOMS)
 
 
@@ -175,7 +175,7 @@ class SubRipFile(UserList, object):
             ...     print unicode(sub)
         """
         string_buffer = []
-        for index, line in enumerate(chain(source_file, u'\n')):
+        for index, line in enumerate(chain(source_file, '\n')):
             if line.strip():
                 string_buffer.append(line)
             else:
@@ -184,7 +184,7 @@ class SubRipFile(UserList, object):
                 if source and all(source):
                     try:
                         yield SubRipItem.from_lines(source)
-                    except Error, error:
+                    except Error as error:
                         error.args += (''.join(source), )
                         cls._handle_error(error, error_handling, index)
 
@@ -215,7 +215,7 @@ class SubRipFile(UserList, object):
         output_eol = eol or self.eol
 
         for item in self:
-            string_repr = unicode(item)
+            string_repr = str(item)
             if output_eol != '\n':
                 string_repr = string_repr.replace('\n', output_eol)
             output_file.write(string_repr)
@@ -240,7 +240,7 @@ class SubRipFile(UserList, object):
             previous_position = string_iterable.tell()
 
         try:
-            first_line = iter(string_iterable).next()
+            first_line = next(iter(string_iterable))
         except StopIteration:
             return ''
         if hasattr(string_iterable, 'seek'):
@@ -250,7 +250,7 @@ class SubRipFile(UserList, object):
 
     @classmethod
     def _detect_encoding(cls, path):
-        file_descriptor = open(path)
+        file_descriptor = open(path, 'rb')
         first_chars = file_descriptor.read(BIGGER_BOM)
         file_descriptor.close()
 

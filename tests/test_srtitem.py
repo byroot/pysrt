@@ -22,7 +22,7 @@ class TestAttributes(unittest.TestCase):
 
     def test_has_content(self):
         self.assertTrue(hasattr(self.item, 'text'))
-        self.assertTrue(isinstance(self.item.text, unicode))
+        self.assertTrue(isinstance(self.item.text, str))
 
     def test_has_start(self):
         self.assertTrue(hasattr(self.item, 'start'))
@@ -65,7 +65,7 @@ class TestOperators(unittest.TestCase):
         self.item.end.shift(seconds=20)
 
     def test_cmp(self):
-        self.assertEquals(self.item, self.item)
+        self.assertEqual(self.item, self.item)
 
 
 class TestSerialAndParsing(unittest.TestCase):
@@ -74,38 +74,41 @@ class TestSerialAndParsing(unittest.TestCase):
         self.item = SubRipItem(1, text="Hello world !")
         self.item.shift(minutes=1)
         self.item.end.shift(seconds=20)
-        self.string = u'1\n00:01:00,000 --> 00:01:20,000\nHello world !\n'
-        self.bad_string = u'foobar'
-        self.coordinates = (u'1\n00:01:00,000 --> 00:01:20,000 X1:000 X2:000 '
+        self.string = '1\n00:01:00,000 --> 00:01:20,000\nHello world !\n'
+        self.bad_string = 'foobar'
+        self.coordinates = ('1\n00:01:00,000 --> 00:01:20,000 X1:000 X2:000 '
                                 'Y1:050 Y2:100\nHello world !\n')
-        self.vtt = (u'1\n00:01:00,000 --> 00:01:20,000 D:vertical A:start '
+        self.vtt = ('1\n00:01:00,000 --> 00:01:20,000 D:vertical A:start '
                                 'L:12%\nHello world !\n')
-        self.dots = u'1\n00:01:00.000 --> 00:01:20.000\nHello world !\n'
+        self.dots = '1\n00:01:00.000 --> 00:01:20.000\nHello world !\n'
 
     def test_serialization(self):
-        self.assertEqual(unicode(self.item), self.string)
+        self.assertEqual(str(self.item), self.string)
 
     def test_from_string(self):
-        self.assertEquals(SubRipItem.from_string(self.string), self.item)
+        self.assertEqual(SubRipItem.from_string(self.string), self.item)
         self.assertRaises(InvalidItem, SubRipItem.from_string,
             self.bad_string)
 
     def test_coordinates(self):
         item = SubRipItem.from_string(self.coordinates)
-        self.assertEquals(item, self.item)
-        self.assertEquals(item.position, 'X1:000 X2:000 Y1:050 Y2:100')
+        self.assertEqual(item, self.item)
+        self.assertEqual(item.position, 'X1:000 X2:000 Y1:050 Y2:100')
 
     def test_vtt_positioning(self):
         vtt = SubRipItem.from_string(self.vtt)
-        self.assertEquals(vtt.position, 'D:vertical A:start L:12%')
-        self.assertEquals(vtt.index, 1)
-        self.assertEquals(vtt.text, 'Hello world !')
+        self.assertEqual(vtt.position, 'D:vertical A:start L:12%')
+        self.assertEqual(vtt.index, 1)
+        self.assertEqual(vtt.text, 'Hello world !')
 
     def test_idempotence(self):
         vtt = SubRipItem.from_string(self.vtt)
-        self.assertEquals(unicode(vtt), self.vtt)
+        self.assertEqual(str(vtt), self.vtt)
         item = SubRipItem.from_string(self.coordinates)
-        self.assertEquals(unicode(item), self.coordinates)
+        self.assertEqual(str(item), self.coordinates)
 
     def test_dots(self):
-        self.assertEquals(SubRipItem.from_string(self.dots), self.item)
+        self.assertEqual(SubRipItem.from_string(self.dots), self.item)
+
+if __name__ == '__main__':
+    unittest.main()
