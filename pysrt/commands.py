@@ -117,7 +117,6 @@ class SubRipShifter(object):
         return -ordinal if negative else ordinal
 
     def parse_encoding(self, encoding_name):
-        print(encoding_name)
         try:
             codecs.lookup(encoding_name)
         except LookupError as error:
