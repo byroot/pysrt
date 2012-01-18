@@ -87,18 +87,17 @@ class TestSerialization(unittest.TestCase):
                           open(self.utf8_path, 'rb').read())
         os.remove(self.temp_path)
 
-    # TODO: How to detect newlines without knowing the encoding?
-    # def test_eol_conversion(self):
-    #     input_file = open(self.windows_path, 'rU')
-    #     input_file.read()
-    #     self.assertEqual(input_file.newlines, '\r\n')
+    def test_eol_conversion(self):
+        input_file = open(self.windows_path, 'rU', encoding='windows-1252')
+        input_file.read()
+        self.assertEqual(input_file.newlines, '\r\n')
 
-    #     srt_file = SubRipFile.open(self.windows_path, encoding='windows-1252')
-    #     srt_file.save(self.temp_path, eol='\n')
+        srt_file = SubRipFile.open(self.windows_path, encoding='windows-1252')
+        srt_file.save(self.temp_path, eol='\n')
 
-    #     output_file = open(self.temp_path, 'rU')
-    #     output_file.read()
-    #     self.assertEqual(output_file.newlines, '\n')
+        output_file = open(self.temp_path, 'rU', encoding='windows-1252')
+        output_file.read()
+        self.assertEqual(output_file.newlines, '\n')
 
 
 class TestSlice(unittest.TestCase):
