@@ -18,7 +18,7 @@ REQUIRES = ['chardet2']
 if sys.version_info < (2, 7):
     REQUIRES.append('argparse')
 
-setup(name='pysrt',
+setup(name='pysrt3',
       version=pysrt.VERSION_STRING,
       author='Jean Boussier',
       author_email='jean.boussier@gmail.com',
