@@ -126,13 +126,11 @@ class SubRipShifter(object):
     def shift(self):
         self.input_file.shift(milliseconds=self.arguments.time_offset)
         self.input_file.write_into(self.output_file)
-        self.output_file.close()
 
     def rate(self):
         ratio = self.arguments.final / self.arguments.initial
         self.input_file.shift(ratio=ratio)
         self.input_file.write_into(self.output_file)
-        self.output_file.close()
 
     def split(self):
         limits = [0] + self.arguments.limits + [self.input_file[-1].end.ordinal + 1]
@@ -158,7 +156,8 @@ class SubRipShifter(object):
     @property
     def input_file(self):
         if not hasattr(self, '_source_file'):
-            encoding = detect(open(self.arguments.file).read()).get('encoding')
+            with open(self.arguments.file, 'rb') as f:
+                encoding = detect(f.read()).get('encoding')
             self._source_file = SubRipFile.open(self.arguments.file,
                 encoding=encoding, error_handling=SubRipFile.ERROR_LOG)
         return self._source_file
