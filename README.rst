@@ -34,12 +34,14 @@ pysrt is available on pypi. To intall it you can use either
 
 pip: ::
     
-    $ sudo pip install pysrt
+    $ sudo pip install pysrt3
     
 or distutils: ::
 
-    $ sudo easy_install pysrt
+    $ sudo easy_install pysrt3
 
+**Note**: The package name that runs on python 3 is ``pysrt3``. The ``pysrt``
+package is compatible with python 2.x.
 
 Library Usage
 =============
