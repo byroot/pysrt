@@ -41,6 +41,9 @@ or distutils: ::
     $ sudo easy_install pysrt
 
 
+It is also available for Python 3 as `pysrt3 <https://github.com/byroot/pysrt/tree/python3>`
+
+
 Library Usage
 =============
 
