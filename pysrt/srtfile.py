@@ -103,6 +103,10 @@ class SubRipFile(UserList, object):
         for item in self:
             item.shift(*args, **kwargs)
 
+    def break_lines(self, *args, **kwargs):
+        for item in self:
+            item.break_lines(*args, **kwargs)
+
     def clean_indexes(self):
         """
         clean_indexes()
