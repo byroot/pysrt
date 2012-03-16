@@ -43,6 +43,27 @@ class SubRipItem(object):
         self.start.shift(*args, **kwargs)
         self.end.shift(*args, **kwargs)
 
+    def break_lines(self, length):
+        """
+        break(length)
+        
+        length -> maximum number of characters per line
+        """
+        lines = self.text.splitlines()
+        for index, line in enumerate(lines):
+            if len(line) > length:
+                windex = 0
+                for word in line.split():
+                    if windex + len(word) > length and windex > 0:
+                        lines[index] = line[:windex-1]
+                        lines.insert(index+1, line[windex:])
+                        break
+                    else:
+                        windex += len(word) + 1
+
+        self.text = u'\n'.join(lines)
+      
+
     @classmethod
     def from_string(cls, source):
         return cls.from_lines(source.splitlines(True))

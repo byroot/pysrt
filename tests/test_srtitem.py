@@ -109,3 +109,25 @@ class TestSerialAndParsing(unittest.TestCase):
 
     def test_dots(self):
         self.assertEquals(SubRipItem.from_string(self.dots), self.item)
+
+
+class TestBreakingLines(unittest.TestCase):
+
+    def setUp(self):
+        original = """77777777 333 1
+55555 55555
+4444 4444
+22 22 22"""
+        self.item = SubRipItem(1, text=original)
+        self.item.break_lines(5)
+
+    def test_break(self):
+        shouldbe = """77777777
+333 1
+55555
+55555
+4444
+4444
+22 22
+22"""
+        self.assertEqual(shouldbe, self.item.text)

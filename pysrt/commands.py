@@ -72,6 +72,11 @@ class SubRipShifter(object):
         Change file encoding. Useful for players accepting only latin1 subtitles.
         List of supported encodings: http://docs.python.org/library/codecs.html#standard-encodings
     """)
+    BREAK_EPILOG = dedent("""\
+        Break lines longer than defined length
+    """)
+    LENGTH_HELP = "Maximum number of characters per line"
+
     def __init__(self):
         self.output_file_path = None
 
@@ -97,6 +102,10 @@ class SubRipShifter(object):
         split_parser = subparsers.add_parser('split', help="Split a file in multiple parts", epilog=self.SPLIT_EPILOG, formatter_class=argparse.RawTextHelpFormatter)
         split_parser.add_argument(underline('limits'), action='store', nargs='+', type=self.parse_time, help=self.LIMITS_HELP)
         split_parser.set_defaults(action=self.split)
+
+        break_parser = subparsers.add_parser('break', help="Break long lines", epilog=self.BREAK_EPILOG, formatter_class=argparse.RawTextHelpFormatter)
+        break_parser.add_argument('length', action='store', type=int, help=self.LENGTH_HELP)
+        break_parser.set_defaults(action=self.break_lines)
         
         parser.add_argument('file', action='store')
 
@@ -150,6 +159,11 @@ class SubRipShifter(object):
             shutil.copy2(self.arguments.file, backup_file)
         self.output_file_path = self.arguments.file
         self.arguments.file = backup_file
+
+    def break_lines(self):
+        self.input_file.break_lines(self.arguments.length)
+        self.input_file.write_into(self.output_file)
+        self.output_file.close()
 
     @property
     def output_encoding(self):
