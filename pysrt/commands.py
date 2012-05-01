@@ -95,12 +95,12 @@ class SubRipShifter(object):
         shift_parser.set_defaults(action=self.shift)
 
         rate_parser = subparsers.add_parser('rate', help="Convert subtitles from a frame rate to another", epilog=self.RATE_EPILOG, formatter_class=argparse.RawTextHelpFormatter)
-        rate_parser.add_argument(underline('initial'), action='store', type=float, help=self.FRAME_RATE_HELP)
-        rate_parser.add_argument(underline('final'), action='store', type=float, help=self.FRAME_RATE_HELP)
+        rate_parser.add_argument('initial', action='store', type=float, help=self.FRAME_RATE_HELP)
+        rate_parser.add_argument('final', action='store', type=float, help=self.FRAME_RATE_HELP)
         rate_parser.set_defaults(action=self.rate)
 
         split_parser = subparsers.add_parser('split', help="Split a file in multiple parts", epilog=self.SPLIT_EPILOG, formatter_class=argparse.RawTextHelpFormatter)
-        split_parser.add_argument(underline('limits'), action='store', nargs='+', type=self.parse_time, help=self.LIMITS_HELP)
+        split_parser.add_argument('limits', action='store', nargs='+', type=self.parse_time, help=self.LIMITS_HELP)
         split_parser.set_defaults(action=self.split)
 
         break_parser = subparsers.add_parser('break', help="Break long lines", epilog=self.BREAK_EPILOG, formatter_class=argparse.RawTextHelpFormatter)
