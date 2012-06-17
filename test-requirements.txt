@@ -1,0 +1,4 @@
+argparse
+chardet
+nose
+coverage
