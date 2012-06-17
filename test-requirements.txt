@@ -1,0 +1,3 @@
+chardet2
+nose
+coverage
