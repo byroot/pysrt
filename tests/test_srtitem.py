@@ -109,3 +109,9 @@ class TestSerialAndParsing(unittest.TestCase):
 
     def test_dots(self):
         self.assertEquals(SubRipItem.from_string(self.dots), self.item)
+
+    # Bug reported in https://github.com/byroot/pysrt/issues/16
+    def test_paring_error(self):
+        self.assertRaises(InvalidItem, SubRipItem.from_string, u'1\n'
+            '00:01:00,000 -> 00:01:20,000 X1:000 X2:000 '
+            'Y1:050 Y2:100\nHello world !\n')

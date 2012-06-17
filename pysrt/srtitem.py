@@ -59,7 +59,10 @@ class SubRipItem(object):
 
     @staticmethod
     def split_timestamps(line):
-        start, end_and_position = line.split('-->')
+        timestamps = line.split('-->')
+        if len(timestamps) != 2:
+            raise InvalidItem()
+        start, end_and_position = timestamps
         end_and_position = end_and_position.lstrip().split(' ', 1)
         end = end_and_position[0]
         position = end_and_position[1] if len(end_and_position) > 1 else ''
