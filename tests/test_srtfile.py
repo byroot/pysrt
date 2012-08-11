@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.abspath(file_path))
 
 import pysrt
 from pysrt import SubRipFile, SubRipItem, SubRipTime
+from pysrt import SUPPORT_UTF_32_LE, SUPPORT_UTF_32_BE
 
 
 class TestOpen(unittest.TestCase):
@@ -200,11 +201,13 @@ class TestBOM(unittest.TestCase):
     def test_utf16be(self):
         self.__test_encoding('bom-utf-16-be.srt')
 
-    def test_utf32le(self):
-        self.__test_encoding('bom-utf-32-le.srt')
+    if SUPPORT_UTF_32_LE:
+        def test_utf32le(self):
+            self.__test_encoding('bom-utf-32-le.srt')
 
-    def test_utf32be(self):
-        self.__test_encoding('bom-utf-32-be.srt')
+    if SUPPORT_UTF_32_BE:
+        def test_utf32be(self):
+            self.__test_encoding('bom-utf-32-be.srt')
 
 
 class TestIntegration(unittest.TestCase):
