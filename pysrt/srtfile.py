@@ -190,6 +190,16 @@ class SubRipFile(UserList, object):
             ...     print unicode(sub)
         """
         string_buffer = []
+
+        # weird bug workaround
+        if hasattr(source_file, 'seek'):
+            position = source_file.tell()
+            # under Python 2.5 this call return the second line of the file
+            # instead of the first character. It's probably a buffering bug
+            # in the codecs module. I've not found a better fix...
+            source_file.read(1)
+            source_file.seek(position)
+
         for index, line in enumerate(chain(source_file, u'\n')):
             if line.strip():
                 string_buffer.append(line)
@@ -278,7 +288,7 @@ class SubRipFile(UserList, object):
     @classmethod
     def _open_unicode_file(cls, path, claimed_encoding=None):
         encoding = claimed_encoding or cls._detect_encoding(path)
-        source_file = codecs.open(path, 'rU', encoding=encoding)
+        source_file = codecs.open(path, 'r', encoding=encoding)
 
         # get rid of BOM if any
         possible_bom = CODECS_BOMS.get(encoding, None)
