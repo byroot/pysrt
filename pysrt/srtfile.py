@@ -19,7 +19,7 @@ try:
 except LookupError:
     SUPPORT_UTF_32_LE = False
 else:
-     BOMS.insert(0, (codecs.BOM_UTF32_LE, 'utf_32_le'))
+    BOMS.insert(0, (codecs.BOM_UTF32_LE, 'utf_32_le'))
 
 SUPPORT_UTF_32_BE = True
 try:

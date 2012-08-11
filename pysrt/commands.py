@@ -13,6 +13,7 @@ from textwrap import dedent
 from chardet import detect
 from pysrt import SubRipFile, SubRipTime, VERSION_STRING
 
+
 def underline(string):
     return "\033[4m%s\033[0m" % string
 
@@ -30,7 +31,7 @@ class SubRipShifter(object):
     }
     DESCRIPTION = dedent("""\
         Srt subtitle editor
-        
+
         It can either shift, split or change the frame rate.
     """)
     TIMESTAMP_HELP = "A timestamp in the form: [-][Hh][Mm]S[s][MSms]"
@@ -106,7 +107,7 @@ class SubRipShifter(object):
         break_parser = subparsers.add_parser('break', help="Break long lines", epilog=self.BREAK_EPILOG, formatter_class=argparse.RawTextHelpFormatter)
         break_parser.add_argument('length', action='store', type=int, help=self.LENGTH_HELP)
         break_parser.set_defaults(action=self.break_lines)
-        
+
         parser.add_argument('file', action='store')
 
         return parser
@@ -187,6 +188,7 @@ class SubRipShifter(object):
             else:
                 self._output_file = sys.stdout
         return self._output_file
+
 
 def main():
     SubRipShifter().run(sys.argv[1:])
