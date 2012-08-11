@@ -9,11 +9,26 @@ from copy import copy
 from pysrt.srtexc import Error
 from pysrt.srtitem import SubRipItem
 
-BOMS = ((codecs.BOM_UTF32_LE, 'utf_32_le'),
-        (codecs.BOM_UTF32_BE, 'utf_32_be'),
-        (codecs.BOM_UTF16_LE, 'utf_16_le'),
+BOMS = [(codecs.BOM_UTF16_LE, 'utf_16_le'),
         (codecs.BOM_UTF16_BE, 'utf_16_be'),
-        (codecs.BOM_UTF8, 'utf_8'))
+        (codecs.BOM_UTF8, 'utf_8')]
+
+SUPPORT_UTF_32_LE = True
+try:
+    codecs.lookup('utf_32_le')
+except LookupError:
+    SUPPORT_UTF_32_LE = False
+else:
+     BOMS.insert(0, (codecs.BOM_UTF32_LE, 'utf_32_le'))
+
+SUPPORT_UTF_32_BE = True
+try:
+    codecs.lookup('utf_32_be')
+except LookupError:
+    SUPPORT_UTF_32_BE = False
+else:
+    BOMS.insert(0, (codecs.BOM_UTF32_BE, 'utf_32_be'))
+
 CODECS_BOMS = dict((codec, unicode(bom, codec)) for bom, codec in BOMS)
 BIGGER_BOM = max(len(bom) for bom, encoding in BOMS)
 
@@ -245,7 +260,6 @@ class SubRipFile(UserList, object):
             return ''
         if hasattr(string_iterable, 'seek'):
             string_iterable.seek(previous_position)
-
         return first_line
 
     @classmethod
