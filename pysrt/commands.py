@@ -17,6 +17,24 @@ def underline(string):
     return "\033[4m%s\033[0m" % string
 
 
+class TimeAwareArgumentParser(argparse.ArgumentParser):
+
+    RE_TIME_REPRESENTATION = re.compile(r'^\-?(\d+[hms]{0,2}){1,4}$')
+
+    def parse_args(self, args=None, namespace=None):
+        time_index = -1
+        for index, arg in enumerate(args):
+            match = self.RE_TIME_REPRESENTATION.match(arg)
+            if match:
+                time_index = index
+                break
+
+        if time_index >= 0:
+            args.insert(time_index, '--')
+
+        return super(TimeAwareArgumentParser, self).parse_args(args, namespace)
+
+
 class SubRipShifter(object):
 
     BACKUP_EXTENSION = '.bak'
@@ -81,7 +99,7 @@ class SubRipShifter(object):
         self.output_file_path = None
 
     def build_parser(self):
-        parser = argparse.ArgumentParser(description=self.DESCRIPTION, formatter_class=argparse.RawTextHelpFormatter)
+        parser = TimeAwareArgumentParser(description=self.DESCRIPTION, formatter_class=argparse.RawTextHelpFormatter)
         parser.add_argument('-i', '--in-place', action='store_true', dest='in_place',
             help="Edit file in-place, saving a backup as file.bak (do not works for the split command)")
         parser.add_argument('-e', '--output-encoding', metavar=underline('encoding'), action='store', dest='output_encoding',
