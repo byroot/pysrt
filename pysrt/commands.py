@@ -10,7 +10,6 @@ import shutil
 import argparse
 from textwrap import dedent
 
-from charade import detect
 from pysrt import SubRipFile, SubRipTime, VERSION_STRING
 
 def underline(string):
@@ -189,13 +188,8 @@ class SubRipShifter(object):
     @property
     def input_file(self):
         if not hasattr(self, '_source_file'):
-            with open(self.arguments.file, 'rb') as f:
-                content = open(self.arguments.file).read()
-                encoding = detect(content).get('encoding')
-                encoding = self.normalize_encoding(encoding)
-
             self._source_file = SubRipFile.open(self.arguments.file,
-                encoding=encoding, error_handling=SubRipFile.ERROR_LOG)
+                error_handling=SubRipFile.ERROR_LOG)
         return self._source_file
 
     @property
@@ -206,9 +200,6 @@ class SubRipShifter(object):
             else:
                 self._output_file = sys.stdout
         return self._output_file
-
-    def normalize_encoding(self, encoding):
-        return encoding.lower().replace('-', '_')
 
 
 def main():
