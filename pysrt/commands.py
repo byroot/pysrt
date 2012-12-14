@@ -190,7 +190,10 @@ class SubRipShifter(object):
     def input_file(self):
         if not hasattr(self, '_source_file'):
             with open(self.arguments.file, 'rb') as f:
-                encoding = detect(f.read()).get('encoding')
+                content = open(self.arguments.file).read()
+                encoding = detect(content).get('encoding')
+                encoding = self.normalize_encoding(encoding)
+
             self._source_file = SubRipFile.open(self.arguments.file,
                 encoding=encoding, error_handling=SubRipFile.ERROR_LOG)
         return self._source_file
@@ -203,6 +206,10 @@ class SubRipShifter(object):
             else:
                 self._output_file = sys.stdout
         return self._output_file
+
+    def normalize_encoding(self, encoding):
+        return encoding.lower().replace('-', '_')
+
 
 def main():
     SubRipShifter().run(sys.argv[1:])
