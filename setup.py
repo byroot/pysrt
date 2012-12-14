@@ -14,7 +14,7 @@ try:
 except:
     pass
 
-REQUIRES = ['chardet']
+REQUIRES = ['charade']
 if sys.version_info < (2, 7):
     REQUIRES.append('argparse')
 

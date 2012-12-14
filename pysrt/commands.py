@@ -10,7 +10,7 @@ import shutil
 import argparse
 from textwrap import dedent
 
-from chardet import detect
+from charade import detect
 from pysrt import SubRipFile, SubRipTime, VERSION_STRING
 
 
