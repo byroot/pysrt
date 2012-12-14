@@ -29,7 +29,7 @@ class TestOpen(unittest.TestCase):
     def test_utf8(self):
         self.assertEquals(len(SubRipFile.open(self.utf8_path)), 1332)
         self.assertRaises(UnicodeDecodeError, SubRipFile.open,
-            self.windows_path)
+            self.windows_path, encoding='utf_8')
 
     def test_windows1252(self):
         srt_file = SubRipFile.open(self.windows_path, encoding='windows-1252')

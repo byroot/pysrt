@@ -6,12 +6,22 @@ from UserList import UserList
 from itertools import chain
 from copy import copy
 
+import charade
+
 from pysrt.srtexc import Error
 from pysrt.srtitem import SubRipItem
 
 BOMS = [(codecs.BOM_UTF16_LE, 'utf_16_le'),
         (codecs.BOM_UTF16_BE, 'utf_16_be'),
         (codecs.BOM_UTF8, 'utf_8')]
+
+CHARADE_ENCODINGS_TRANSLATION = {
+    'UTF-32LE': 'utf_32_le',
+    'UTF-32BE': 'utf_32_be',
+    'UTF-16LE': 'utf_16_le',
+    'UTF-16BE': 'utf_16_be',
+    'UTF-8': 'utf_8'
+}
 
 SUPPORT_UTF_32_LE = True
 try:
@@ -30,7 +40,6 @@ else:
     BOMS.insert(0, (codecs.BOM_UTF32_BE, 'utf_32_be'))
 
 CODECS_BOMS = dict((codec, unicode(bom, codec)) for bom, codec in BOMS)
-BIGGER_BOM = max(len(bom) for bom, encoding in BOMS)
 
 
 class SubRipFile(UserList, object):
@@ -274,16 +283,17 @@ class SubRipFile(UserList, object):
 
     @classmethod
     def _detect_encoding(cls, path):
-        file_descriptor = open(path)
-        first_chars = file_descriptor.read(BIGGER_BOM)
-        file_descriptor.close()
+        report = charade.detect(open(path).read())
+        encoding = report.get('encoding')
+        if not encoding:
+            return cls.DEFAULT_ENCODING
+        return cls._normalize_encoding(encoding)
 
-        for bom, encoding in BOMS:
-            if first_chars.startswith(bom):
-                return encoding
-
-        # TODO: maybe a chardet integration
-        return cls.DEFAULT_ENCODING
+    @classmethod
+    def _normalize_encoding(cls, encoding):
+        if encoding in CHARADE_ENCODINGS_TRANSLATION:
+            return CHARADE_ENCODINGS_TRANSLATION[encoding]
+        return encoding.lower().replace('-', '_')
 
     @classmethod
     def _open_unicode_file(cls, path, claimed_encoding=None):
