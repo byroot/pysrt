@@ -49,7 +49,7 @@ class SubRipItem(object):
 
     @classmethod
     def from_lines(cls, lines):
-        if len(lines) < 3:
+        if len(lines) < 2:
             raise InvalidItem()
         lines = [l.rstrip() for l in lines]
         index = lines[0]

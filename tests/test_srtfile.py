@@ -228,6 +228,11 @@ class TestIntegration(unittest.TestCase):
         file = SubRipFile.open('/dev/null', error_handling=SubRipFile.ERROR_RAISE)
         self.assertEquals(len(file), 0)
 
+    def test_file_with_empty_items(self):
+        path = os.path.join(self.base_path, 'empty.srt')
+        file = SubRipFile.open(path)
+        self.assertEquals(len(file), 7)
+
     def test_blank_lines(self):
         items = list(SubRipFile.stream([u'\n'] * 20, error_handling=SubRipFile.ERROR_RAISE))
         self.assertEquals(len(items), 0)
