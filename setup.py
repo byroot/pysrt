@@ -14,9 +14,7 @@ try:
 except:
     pass
 
-REQUIRES = ['chardet2']
-if sys.version_info < (2, 7):
-    REQUIRES.append('argparse')
+REQUIRES = ['charade']
 
 setup(name='pysrt3',
       version=pysrt.VERSION_STRING,
