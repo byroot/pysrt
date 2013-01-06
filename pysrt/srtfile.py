@@ -6,7 +6,11 @@ from UserList import UserList
 from itertools import chain
 from copy import copy
 
-import charade
+try:
+    import charade
+except ImportError: # For python < 2.6
+    import chardet
+    charade = chardet
 
 from pysrt.srtexc import Error
 from pysrt.srtitem import SubRipItem
