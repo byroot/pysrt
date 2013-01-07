@@ -9,8 +9,7 @@ from copy import copy
 try:
     import charade
 except ImportError: # For python < 2.6
-    import chardet
-    charade = chardet
+    import chardet as charade
 
 from pysrt.srtexc import Error
 from pysrt.srtitem import SubRipItem
