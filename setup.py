@@ -14,7 +14,7 @@ try:
 except:
     pass
 
-REQUIRES = ['charade']
+REQUIRES = ['chardet2']
 
 setup(name='pysrt3',
       version=pysrt.VERSION_STRING,
