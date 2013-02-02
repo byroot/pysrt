@@ -2,7 +2,7 @@
 """
 SubRip's subtitle parser
 """
-from pysrt.srtexc import InvalidItem
+from pysrt.srtexc import InvalidItem, InvalidIndex
 from pysrt.srttime import SubRipTime
 
 
@@ -18,7 +18,11 @@ class SubRipItem(object):
     ITEM_PATTERN = u'%s\n%s --> %s%s\n%s\n'
 
     def __init__(self, index=0, start=None, end=None, text=u'', position=u''):
-        self.index = int(index)
+        try:
+            self.index = int(index)
+        except ValueError:
+            raise InvalidIndex(repr(index))
+
         self.start = SubRipTime.coerce(start or 0)
         self.end = SubRipTime.coerce(end or 0)
         self.position = unicode(position)
