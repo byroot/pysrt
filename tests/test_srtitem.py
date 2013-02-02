@@ -80,6 +80,7 @@ class TestSerialAndParsing(unittest.TestCase):
                                 'Y1:050 Y2:100\nHello world !\n')
         self.vtt = ('1\n00:01:00,000 --> 00:01:20,000 D:vertical A:start '
                                 'L:12%\nHello world !\n')
+        self.bad_index = 'foo\n00:01:00,000 --> 00:01:20,000\nHello !\n'
         self.dots = '1\n00:01:00.000 --> 00:01:20.000\nHello world !\n'
 
     def test_serialization(self):
@@ -115,6 +116,9 @@ class TestSerialAndParsing(unittest.TestCase):
         self.assertRaises(InvalidItem, SubRipItem.from_string, '1\n'
             '00:01:00,000 -> 00:01:20,000 X1:000 X2:000 '
             'Y1:050 Y2:100\nHello world !\n')
+
+    def test_invalid_index(self):
+        self.assertRaises(InvalidItem, SubRipItem.from_string, self.bad_index)
 
 if __name__ == '__main__':
     unittest.main()

@@ -22,3 +22,10 @@ class InvalidItem(Error):
     Raised when parser fail to parse a sub title item
     """
     pass
+
+
+class InvalidIndex(InvalidItem):
+    """
+    Raised when parser fail to parse a sub title index
+    """
+    pass
