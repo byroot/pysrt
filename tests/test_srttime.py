@@ -81,6 +81,9 @@ class TestTimeParsing(unittest.TestCase):
     def test_invalid_time_string(self):
         self.assertRaises(InvalidTimeString, SubRipTime.from_string, 'hello')
 
+    def test_parsing_without_milliseconds(self):
+        self.assertEquals('12:34:56', SubRipTime(12, 34, 56))
+
 
 class TestCoercing(unittest.TestCase):
 

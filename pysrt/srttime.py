@@ -53,7 +53,7 @@ class TimeItemDescriptor(object):
 class SubRipTime(Comparable):
     TIME_PATTERN = '%02d:%02d:%02d,%03d'
     TIME_REPR = 'SubRipTime(%d, %d, %d, %d)'
-    RE_TIME_SEP = re.compile(r'\:|\.|\,')
+    RE_MILLISECOND_SEP = re.compile(r'\.|\,')
     SECONDS_RATIO = 1000
     MINUTES_RATIO = SECONDS_RATIO * 60
     HOURS_RATIO = MINUTES_RATIO * 60
@@ -164,10 +164,11 @@ class SubRipTime(Comparable):
         str/unicode(HH:MM:SS,mmm) -> SubRipTime corresponding to serial
         raise InvalidTimeString
         """
-        items = cls.RE_TIME_SEP.split(source)
-        if len(items) != 4:
+        parts = source.split(':')
+        if len(parts) != 3:
             raise InvalidTimeString
-        return cls(*(int(i) for i in items))
+        parts.extend(cls.RE_MILLISECOND_SEP.split(parts.pop()))
+        return cls(*(int(i) for i in parts))
 
     @classmethod
     def from_time(cls, source):
