@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-import pysrt
+from pysrt.version import VERSION_STRING
 from setuptools import setup, find_packages
 
 
@@ -24,7 +24,7 @@ if sys.version_info < (2, 7):
     REQUIRES.append('argparse')
 
 setup(name='pysrt',
-      version=pysrt.VERSION_STRING,
+      version=VERSION_STRING,
       author='Jean Boussier',
       author_email='jean.boussier@gmail.com',
       packages=find_packages(),
