@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-import pysrt
+from pysrt.version import VERSION_STRING
 from setuptools import setup, find_packages
-
 
 README = ''
 try:
@@ -17,7 +16,7 @@ except:
 REQUIRES = ['chardet2']
 
 setup(name='pysrt3',
-      version=pysrt.VERSION_STRING,
+      version=VERSION_STRING,
       author='Jean Boussier',
       author_email='jean.boussier@gmail.com',
       packages=find_packages(),
