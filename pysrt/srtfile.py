@@ -13,6 +13,7 @@ except ImportError: # For python < 2.6
 
 from pysrt.srtexc import Error
 from pysrt.srtitem import SubRipItem
+from pysrt.srttime import SubRipTime
 
 BOMS = [(codecs.BOM_UTF16_LE, 'utf_16_le'),
         (codecs.BOM_UTF16_BE, 'utf_16_be'),
@@ -140,6 +141,19 @@ class SubRipFile(UserList, object):
         self.sort()
         for index, item in enumerate(self):
             item.index = index + 1
+
+    def text_at_time(self, time):
+        """
+        text_at_time()
+
+        Get text that, according to subtitles, should appear on screen
+        exactly at given time.
+        """
+        time = SubRipTime.coerce(time)
+
+        for item in self:
+            if item.start <= time and time <= item.end:
+                return item.text
 
     @classmethod
     def open(cls, path='', encoding=None, error_handling=ERROR_PASS):

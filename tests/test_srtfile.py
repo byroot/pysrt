@@ -181,6 +181,22 @@ class TestCleanIndexes(unittest.TestCase):
             self.assertTrue(first <= second)
 
 
+class TestTextAtTime(unittest.TestCase):
+
+    def setUp(self):
+        self.file = SubRipFile.open(os.path.join(file_path, 'tests', 'static',
+            'utf-8.srt'))
+
+    def test_text_at_time(self):
+        self.assertEquals(self.file.text_at_time(SubRipTime(0, 1, 14, 20)),
+                          u'Ron Burgundy.')
+        self.assertEquals(self.file.text_at_time(SubRipTime(0, 1, 16, 11)),
+                          u'Ron Burgundy.')
+        self.assertTrue(self.file.text_at_time(SubRipTime(0, 1, 16, 12)) is None)
+        self.assertTrue(self.file.text_at_time(SubRipTime(2, 0, 0, 0)) is None)
+        self.assertTrue(self.file.text_at_time(-1) is None)
+
+
 class TestBOM(unittest.TestCase):
     "In response of issue #6 https://github.com/byroot/pysrt/issues/6"
 
