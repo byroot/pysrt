@@ -8,7 +8,7 @@ from copy import copy
 
 try:
     import charade
-except ImportError: # For python < 2.6
+except ImportError:  # For python < 2.6
     import chardet as charade
 
 from pysrt.srtexc import Error
@@ -121,7 +121,7 @@ class SubRipFile(UserList, object):
 
         A specialization of slice. Return all subtiles visible at the
         timestamp mark.
-        
+
         Example:
             >>> subs.at((0, 0, 20, 0)).shift(seconds=2)
             >>> subs.at(seconds=20).shift(seconds=2)
