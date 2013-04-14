@@ -157,6 +157,10 @@ class SubRipFile(UserList, object):
         for index, item in enumerate(self):
             item.index = index + 1
 
+    @property
+    def text(self):
+        return u'\n'.join(i.text for i in self)
+
     @classmethod
     def open(cls, path='', encoding=None, error_handling=ERROR_PASS):
         """

@@ -132,6 +132,22 @@ class TestShifting(unittest.TestCase):
         self.assertEquals(srt_file[0].end, (2, 2, 2, 2))
 
 
+class TestText(unittest.TestCase):
+
+    def test_single_item(self):
+        srt_file = SubRipFile([
+            SubRipItem(1, {'seconds': 1}, {'seconds': 2}, u'Hello')
+        ])
+        self.assertEquals(srt_file.text, u'Hello')
+
+    def test_multiple_item(self):
+        srt_file = SubRipFile([
+            SubRipItem(1, {'seconds': 0}, {'seconds': 3}, u'Hello'),
+            SubRipItem(1, {'seconds': 1}, {'seconds': 2}, u'World !')
+        ])
+        self.assertEquals(srt_file.text, u'Hello\nWorld !')
+
+
 class TestDuckTyping(unittest.TestCase):
 
     def setUp(self):
