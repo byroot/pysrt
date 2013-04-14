@@ -25,19 +25,19 @@ class TestOpen(unittest.TestCase):
         self.invalid_path = os.path.join(self.static_path, 'invalid.srt')
 
     def test_utf8(self):
-        self.assertEqual(len(SubRipFile.open(self.utf8_path)), 1332)
-        self.assertRaises(UnicodeDecodeError, SubRipFile.open,
+        self.assertEqual(len(pysrt.open(self.utf8_path)), 1332)
+        self.assertRaises(UnicodeDecodeError, pysrt.open,
             self.windows_path)
 
     def test_windows1252(self):
-        srt_file = SubRipFile.open(self.windows_path, encoding='windows-1252')
+        srt_file = pysrt.open(self.windows_path, encoding='windows-1252')
         self.assertEqual(len(srt_file), 1332)
         self.assertEqual(srt_file.eol, '\r\n')
-        self.assertRaises(UnicodeDecodeError, SubRipFile.open,
+        self.assertRaises(UnicodeDecodeError, pysrt.open,
             self.utf8_path, encoding='ascii')
 
     def test_error_handling(self):
-        self.assertRaises(pysrt.Error, SubRipFile.open, self.invalid_path,
+        self.assertRaises(pysrt.Error, pysrt.open, self.invalid_path,
             error_handling=SubRipFile.ERROR_RAISE)
 
 
@@ -52,15 +52,15 @@ class TestFromString(unittest.TestCase):
 
     def test_utf8(self):
         unicode_content = codecs.open(self.utf8_path, encoding='utf_8').read()
-        self.assertEqual(len(SubRipFile.from_string(unicode_content)), 1332)
+        self.assertEqual(len(pysrt.from_string(unicode_content)), 1332)
         self.assertRaises(UnicodeDecodeError, open(self.windows_path).read)
 
     def test_windows1252(self):
         srt_string = codecs.open(self.windows_path, encoding='windows-1252').read()
-        srt_file = SubRipFile.from_string(srt_string, encoding='windows-1252', eol='\r\n')
+        srt_file = pysrt.from_string(srt_string, encoding='windows-1252', eol='\r\n')
         self.assertEqual(len(srt_file), 1332)
         self.assertEqual(srt_file.eol, '\r\n')
-        self.assertRaises(UnicodeDecodeError, SubRipFile.open,
+        self.assertRaises(UnicodeDecodeError, pysrt.open,
             self.utf8_path, encoding='ascii')
 
 
@@ -75,13 +75,13 @@ class TestSerialization(unittest.TestCase):
 
     def test_compare_from_string_and_from_path(self):
         unicode_content = codecs.open(self.utf8_path, encoding='utf_8').read()
-        iterator = zip(SubRipFile.open(self.utf8_path),
-            SubRipFile.from_string(unicode_content))
+        iterator = zip(pysrt.open(self.utf8_path),
+            pysrt.from_string(unicode_content))
         for file_item, string_item in iterator:
             self.assertEqual(str(file_item), str(string_item))
 
     def test_save(self):
-        srt_file = SubRipFile.open(self.windows_path, encoding='windows-1252')
+        srt_file = pysrt.open(self.windows_path, encoding='windows-1252')
         srt_file.save(self.temp_path, eol='\n', encoding='utf-8')
         self.assertEqual(open(self.temp_path, 'rb').read(),
                           open(self.utf8_path, 'rb').read())
@@ -92,7 +92,7 @@ class TestSerialization(unittest.TestCase):
         input_file.read()
         self.assertEqual(input_file.newlines, '\r\n')
 
-        srt_file = SubRipFile.open(self.windows_path, encoding='windows-1252')
+        srt_file = pysrt.open(self.windows_path, encoding='windows-1252')
         srt_file.save(self.temp_path, eol='\n')
 
         output_file = open(self.temp_path, 'rU', encoding='windows-1252')
@@ -103,7 +103,7 @@ class TestSerialization(unittest.TestCase):
 class TestSlice(unittest.TestCase):
 
     def setUp(self):
-        self.file = SubRipFile.open(os.path.join(file_path, 'tests', 'static',
+        self.file = pysrt.open(os.path.join(file_path, 'tests', 'static',
             'utf-8.srt'))
 
     def test_slice(self):
@@ -184,7 +184,7 @@ class TestEOLProperty(unittest.TestCase):
 class TestCleanIndexes(unittest.TestCase):
 
     def setUp(self):
-        self.file = SubRipFile.open(os.path.join(file_path, 'tests', 'static',
+        self.file = pysrt.open(os.path.join(file_path, 'tests', 'static',
             'utf-8.srt'))
 
     def test_clean_indexes(self):
@@ -205,7 +205,7 @@ class TestBOM(unittest.TestCase):
         self.base_path = os.path.join(file_path, 'tests', 'static')
 
     def __test_encoding(self, encoding):
-        srt_file = SubRipFile.open(os.path.join(self.base_path, encoding))
+        srt_file = pysrt.open(os.path.join(self.base_path, encoding))
         self.assertEqual(len(srt_file), 7)
         self.assertEqual(srt_file[0].index, 1)
 
@@ -236,15 +236,15 @@ class TestIntegration(unittest.TestCase):
 
     def test_length(self):
         path = os.path.join(self.base_path, 'capability_tester.srt')
-        file = SubRipFile.open(path)
+        file = pysrt.open(path)
         self.assertEqual(len(file), 37)
 
     def test_empty_file(self):
-        file = SubRipFile.open('/dev/null', error_handling=SubRipFile.ERROR_RAISE)
+        file = pysrt.open('/dev/null', error_handling=SubRipFile.ERROR_RAISE)
         self.assertEqual(len(file), 0)
 
     def test_blank_lines(self):
-        items = list(SubRipFile.stream(['\n'] * 20, error_handling=SubRipFile.ERROR_RAISE))
+        items = list(pysrt.stream(['\n'] * 20, error_handling=SubRipFile.ERROR_RAISE))
         self.assertEqual(len(items), 0)
 
 if __name__ == '__main__':

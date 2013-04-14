@@ -187,10 +187,10 @@ class SubRipFile(UserList, object):
             opened with `codecs.open()` or an array of unicode.
 
         Example:
-            >>> from pysrt import SubRipFile
+            >>> import pysrt
             >>> import codecs
             >>> file = codecs.open('movie.srt', encoding='utf-8')
-            >>> for sub in SubRipFile.stream(file):
+            >>> for sub in pysrt.stream(file):
             ...     sub.text += "\nHello !"
             ...     print unicode(sub)
         """

@@ -52,13 +52,13 @@ Library Usage
 
 Import: ::
 
-    >>> from pysrt import SubRipFile
+    >>> import pysrt
     
 Parsing: ::
 
-    >>> subs = SubRipFile.open('some/file.srt')
+    >>> subs = pysrt.open('some/file.srt')
     # If you get a UnicodeDecodeError try to specify the encoding
-    >>> subs = SubRipFile.open('some/file.srt', encoding='iso-8859-1')
+    >>> subs = pysrt.open('some/file.srt', encoding='iso-8859-1')
     
 SubRipFile are list-like objects of SubRipItem instances: ::
     
