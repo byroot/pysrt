@@ -94,7 +94,7 @@ class SubRipFile(UserList, object):
 
         A specialization of slice. Return all subtiles visible at the
         timestamp mark.
-        
+
         Example:
             >>> subs.at((0, 0, 20, 0)).shift(seconds=2)
             >>> subs.at(seconds=20).shift(seconds=2)
