@@ -117,6 +117,10 @@ class TestSlice(unittest.TestCase):
         self.assertEquals(len(self.file.slice(starts_after=(1, 2, 3, 4))),
                           459)
 
+    def test_at(self):
+        self.assertEquals(len(self.file.at((0, 0, 31, 0))), 1)
+        self.assertEquals(len(self.file.at(seconds=31)), 1)
+
 
 class TestShifting(unittest.TestCase):
 
