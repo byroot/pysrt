@@ -86,6 +86,22 @@ class SubRipFile(UserList, object):
         clone.data = list(clone.data)
         return clone
 
+    def at(self, timestamp=None, **kwargs):
+        """
+        at(timestamp) -> SubRipFile clone
+
+        timestamp argument should be coercible to SubRipFile object.
+
+        A specialization of slice. Return all subtiles visible at the
+        timestamp mark.
+        
+        Example:
+            >>> subs.at((0, 0, 20, 0)).shift(seconds=2)
+            >>> subs.at(seconds=20).shift(seconds=2)
+        """
+        time = timestamp or kwargs
+        return self.slice(starts_before=time, ends_after=time)
+
     def shift(self, *args, **kwargs):
         """shift(hours, minutes, seconds, milliseconds, ratio)
 
