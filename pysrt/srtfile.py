@@ -286,7 +286,13 @@ class SubRipFile(UserList, object):
 
     @classmethod
     def _detect_encoding(cls, path):
-        report = charade.detect(open(path).read())
+        sample = open(path).read(1024)
+
+        for bom, encoding in BOMS:
+            if sample.startswith(bom):
+                return encoding
+
+        report = charade.detect(sample)
         encoding = report.get('encoding')
         if not encoding:
             return cls.DEFAULT_ENCODING
