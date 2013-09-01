@@ -247,5 +247,9 @@ class TestIntegration(unittest.TestCase):
         items = list(pysrt.stream(['\n'] * 20, error_handling=SubRipFile.ERROR_RAISE))
         self.assertEqual(len(items), 0)
 
+    def test_missing_indexes(self):
+        items = pysrt.open(os.path.join(self.base_path, 'no-indexes.srt'))
+        self.assertEquals(len(items), 7)
+
 if __name__ == '__main__':
     unittest.main()
