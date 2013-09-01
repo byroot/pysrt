@@ -256,3 +256,7 @@ class TestIntegration(unittest.TestCase):
     def test_blank_lines(self):
         items = list(pysrt.stream([u'\n'] * 20, error_handling=SubRipFile.ERROR_RAISE))
         self.assertEquals(len(items), 0)
+
+    def test_missing_indexes(self):
+        items = pysrt.open(os.path.join(self.base_path, 'no-indexes.srt'))
+        self.assertEquals(len(items), 7)

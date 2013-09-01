@@ -16,12 +16,13 @@ class SubRipItem(object):
     position -> unicode: raw srt/vtt "display coordinates" string
     """
     ITEM_PATTERN = u'%s\n%s --> %s%s\n%s\n'
+    TIMESTAMP_SEPARATOR = '-->'
 
     def __init__(self, index=0, start=None, end=None, text=u'', position=u''):
         try:
             self.index = int(index)
-        except ValueError:
-            raise InvalidIndex(repr(index))
+        except (TypeError, ValueError): # try to cast as int, but it's not mandatory
+            self.index = index
 
         self.start = SubRipTime.coerce(start or 0)
         self.end = SubRipTime.coerce(end or 0)
@@ -56,14 +57,17 @@ class SubRipItem(object):
         if len(lines) < 2:
             raise InvalidItem()
         lines = [l.rstrip() for l in lines]
-        index = lines[0]
-        start, end, position = cls.split_timestamps(lines[1])
-        body = u'\n'.join(lines[2:])
+
+        index = None
+        if cls.TIMESTAMP_SEPARATOR not in lines[0]:
+            index = lines.pop(0)
+        start, end, position = cls.split_timestamps(lines[0])
+        body = u'\n'.join(lines[1:])
         return cls(index, start, end, body, position)
 
-    @staticmethod
-    def split_timestamps(line):
-        timestamps = line.split('-->')
+    @classmethod
+    def split_timestamps(cls, line):
+        timestamps = line.split(cls.TIMESTAMP_SEPARATOR)
         if len(timestamps) != 2:
             raise InvalidItem()
         start, end_and_position = timestamps

@@ -81,7 +81,8 @@ class TestSerialAndParsing(unittest.TestCase):
         self.vtt = (u'1\n00:01:00,000 --> 00:01:20,000 D:vertical A:start '
                                 'L:12%\nHello world !\n')
         self.dots = u'1\n00:01:00.000 --> 00:01:20.000\nHello world !\n'
-        self.bad_index = u'foo\n00:01:00,000 --> 00:01:20,000\nHello !\n'
+        self.string_index = u'foo\n00:01:00,000 --> 00:01:20,000\nHello !\n'
+        self.no_index = u'00:01:00,000 --> 00:01:20,000\nHello world !\n'
 
     def test_serialization(self):
         self.assertEqual(unicode(self.item), self.string)
@@ -117,5 +118,12 @@ class TestSerialAndParsing(unittest.TestCase):
             '00:01:00,000 -> 00:01:20,000 X1:000 X2:000 '
             'Y1:050 Y2:100\nHello world !\n')
 
-    def test_invalid_index(self):
-        self.assertRaises(InvalidItem, SubRipItem.from_string, self.bad_index)
+    def test_string_index(self):
+        item = SubRipItem.from_string(self.string_index)
+        self.assertEquals(item.index, 'foo')
+        self.assertEquals(item.text, 'Hello !')
+
+    def test_no_index(self):
+        item = SubRipItem.from_string(self.no_index)
+        self.assertEquals(item.index, None)
+        self.assertEquals(item.text, 'Hello world !')
