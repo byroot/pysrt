@@ -63,7 +63,7 @@ Parsing: ::
     
 SubRipFile are list-like objects of SubRipItem instances: ::
     
-    >>> len(first_sub)
+    >>> len(subs)
     >>> first_sub = subs[0]
     
 SubRipItem instances are editable just like pure Python objects: ::
