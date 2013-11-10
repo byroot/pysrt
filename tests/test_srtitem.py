@@ -83,6 +83,8 @@ class TestSerialAndParsing(unittest.TestCase):
         self.string_index = 'foo\n00:01:00,000 --> 00:01:20,000\nHello !\n'
         self.dots = '1\n00:01:00.000 --> 00:01:20.000\nHello world !\n'
         self.no_index = '00:01:00,000 --> 00:01:20,000\nHello world !\n'
+        self.junk_after_timestamp = ('1\n00:01:00,000 --> 00:01:20,000?\n'
+                                'Hello world !\n')
 
     def test_serialization(self):
         self.assertEqual(str(self.item), self.string)
@@ -127,6 +129,10 @@ class TestSerialAndParsing(unittest.TestCase):
         item = SubRipItem.from_string(self.no_index)
         self.assertEquals(item.index, None)
         self.assertEquals(item.text, 'Hello world !')
+
+    def test_junk_after_timestamp(self):
+        item = SubRipItem.from_string(self.junk_after_timestamp)
+        self.assertEquals(item, self.item)
 
 if __name__ == '__main__':
     unittest.main()
