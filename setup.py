@@ -14,7 +14,7 @@ except:
 REQUIRES = ['chardet2']
 
 setup(name='pysrt3',
-      version='0.5.0',
+      version='0.5.1',
       author='Jean Boussier',
       author_email='jean.boussier@gmail.com',
       packages=find_packages(),
