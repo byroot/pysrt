@@ -86,7 +86,7 @@ Removing: ::
     
 Slicing: ::
     
-    >>> part = subs.slice(starts_after={'minutes': 2, seconds': 30}, ends_before={'minutes': 3, 'seconds': 40})
+    >>> part = subs.slice(starts_after={'minutes': 2, 'seconds': 30}, ends_before={'minutes': 3, 'seconds': 40})
     >>> part.shift(seconds=-2)
     
 Saving changes: ::
