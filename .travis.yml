@@ -6,5 +6,7 @@ python:
   - "pypy"
 install:
   - pip install -r test-requirements.txt --use-mirrors --upgrade
+  - pip install coveralls --use-mirrors
 script: nosetests --with-coverage --cover-package=pysrt
-
+after_success:
+  coveralls
