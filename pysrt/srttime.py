@@ -7,6 +7,7 @@ from datetime import time
 
 from pysrt.srtexc import InvalidTimeString
 from pysrt.comparablemixin import ComparableMixin
+from pysrt.compat import str, basestring
 
 class TimeItemDescriptor(object):
     # pylint: disable-msg=R0903
@@ -65,7 +66,7 @@ class SubRipTime(ComparableMixin):
         return self.TIME_PATTERN % tuple(self)
 
     def _compare(self, other, method):
-        return super()._compare(self.coerce(other), method)
+        return super(SubRipTime, self)._compare(self.coerce(other), method)
 
     def _cmpkey(self):
         return self.ordinal
@@ -104,7 +105,7 @@ class SubRipTime(ComparableMixin):
         """
         if isinstance(other, SubRipTime):
             return other
-        if isinstance(other, str):
+        if isinstance(other, basestring):
             return cls.from_string(other)
         if isinstance(other, int):
             return cls.from_ordinal(other)

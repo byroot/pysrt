@@ -2,12 +2,18 @@
 import os
 import sys
 import codecs
-from collections import UserList
+
+try:
+    from collections import UserList
+except ImportError:
+    from UserList import UserList
+
 from itertools import chain
 from copy import copy
 
 from pysrt.srtexc import Error
 from pysrt.srtitem import SubRipItem
+from pysrt.compat import str
 
 BOMS = ((codecs.BOM_UTF32_LE, 'utf_32_le'),
         (codecs.BOM_UTF32_BE, 'utf_32_be'),
