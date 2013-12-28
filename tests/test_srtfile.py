@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.abspath(file_path))
 
 import pysrt
 from pysrt import SubRipFile, SubRipItem, SubRipTime
+from pysrt.compat import str, open
 
 
 class TestOpen(unittest.TestCase):
@@ -83,8 +84,8 @@ class TestSerialization(unittest.TestCase):
     def test_save(self):
         srt_file = pysrt.open(self.windows_path, encoding='windows-1252')
         srt_file.save(self.temp_path, eol='\n', encoding='utf-8')
-        self.assertEqual(open(self.temp_path, 'rb').read(),
-                          open(self.utf8_path, 'rb').read())
+        self.assertEqual(bytes(open(self.temp_path, 'rb').read()),
+                          bytes(open(self.utf8_path, 'rb').read()))
         os.remove(self.temp_path)
 
     def test_eol_conversion(self):

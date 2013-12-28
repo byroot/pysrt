@@ -9,7 +9,7 @@ file_path = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.abspath(file_path))
 
 from pysrt import SubRipItem, SubRipTime, InvalidItem
-
+from pysrt.compat import basestring
 
 class TestAttributes(unittest.TestCase):
 
@@ -22,7 +22,7 @@ class TestAttributes(unittest.TestCase):
 
     def test_has_content(self):
         self.assertTrue(hasattr(self.item, 'text'))
-        self.assertTrue(isinstance(self.item.text, str))
+        self.assertTrue(isinstance(self.item.text, basestring))
 
     def test_has_start(self):
         self.assertTrue(hasattr(self.item, 'start'))

@@ -5,7 +5,7 @@ SubRip's subtitle parser
 from pysrt.srtexc import InvalidItem, InvalidIndex
 from pysrt.srttime import SubRipTime
 from pysrt.comparablemixin import ComparableMixin
-
+from pysrt.compat import str
 
 class SubRipItem(ComparableMixin):
     """
