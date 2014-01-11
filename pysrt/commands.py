@@ -10,8 +10,8 @@ import shutil
 import argparse
 from textwrap import dedent
 
+from charade import detect
 from pysrt import SubRipFile, SubRipTime, VERSION_STRING
-
 
 def underline(string):
     return "\033[4m%s\033[0m" % string
@@ -146,20 +146,18 @@ class SubRipShifter(object):
     def parse_encoding(self, encoding_name):
         try:
             codecs.lookup(encoding_name)
-        except LookupError, error:
+        except LookupError as error:
             raise argparse.ArgumentTypeError(error.message)
         return encoding_name
 
     def shift(self):
         self.input_file.shift(milliseconds=self.arguments.time_offset)
         self.input_file.write_into(self.output_file)
-        self.output_file.close()
 
     def rate(self):
         ratio = self.arguments.final / self.arguments.initial
         self.input_file.shift(ratio=ratio)
         self.input_file.write_into(self.output_file)
-        self.output_file.close()
 
     def split(self):
         limits = [0] + self.arguments.limits + [self.input_file[-1].end.ordinal + 1]
@@ -181,9 +179,8 @@ class SubRipShifter(object):
     def break_lines(self):
         split_re = re.compile(r'(.{,%i})(?:\s+|$)' % self.arguments.length)
         for item in self.input_file:
-            item.text = u'\n'.join(split_re.split(item.text)[1::2])
+            item.text = '\n'.join(split_re.split(item.text)[1::2])
         self.input_file.write_into(self.output_file)
-        self.output_file.close()
 
     @property
     def output_encoding(self):
@@ -192,8 +189,13 @@ class SubRipShifter(object):
     @property
     def input_file(self):
         if not hasattr(self, '_source_file'):
+            with open(self.arguments.file, 'rb') as f:
+                content = f.read()
+                encoding = detect(content).get('encoding')
+                encoding = self.normalize_encoding(encoding)
+
             self._source_file = SubRipFile.open(self.arguments.file,
-                error_handling=SubRipFile.ERROR_LOG)
+                encoding=encoding, error_handling=SubRipFile.ERROR_LOG)
         return self._source_file
 
     @property
@@ -204,6 +206,9 @@ class SubRipShifter(object):
             else:
                 self._output_file = sys.stdout
         return self._output_file
+
+    def normalize_encoding(self, encoding):
+        return encoding.lower().replace('-', '_')
 
 
 def main():

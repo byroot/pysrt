@@ -4,9 +4,10 @@ SubRip's subtitle parser
 """
 from pysrt.srtexc import InvalidItem, InvalidIndex
 from pysrt.srttime import SubRipTime
+from pysrt.comparablemixin import ComparableMixin
+from pysrt.compat import str
 
-
-class SubRipItem(object):
+class SubRipItem(ComparableMixin):
     """
     SubRipItem(index, start, end, text, position)
 
@@ -15,10 +16,10 @@ class SubRipItem(object):
     text -> unicode: text content for item.
     position -> unicode: raw srt/vtt "display coordinates" string
     """
-    ITEM_PATTERN = u'%s\n%s --> %s%s\n%s\n'
+    ITEM_PATTERN = '%s\n%s --> %s%s\n%s\n'
     TIMESTAMP_SEPARATOR = '-->'
 
-    def __init__(self, index=0, start=None, end=None, text=u'', position=u''):
+    def __init__(self, index=0, start=None, end=None, text='', position=''):
         try:
             self.index = int(index)
         except (TypeError, ValueError): # try to cast as int, but it's not mandatory
@@ -26,17 +27,16 @@ class SubRipItem(object):
 
         self.start = SubRipTime.coerce(start or 0)
         self.end = SubRipTime.coerce(end or 0)
-        self.position = unicode(position)
-        self.text = unicode(text)
+        self.position = str(position)
+        self.text = str(text)
 
-    def __unicode__(self):
+    def __str__(self):
         position = ' %s' % self.position if self.position.strip() else ''
         return self.ITEM_PATTERN % (self.index, self.start, self.end,
                                     position, self.text)
 
-    def __cmp__(self, other):
-        return cmp(self.start, other.start) \
-            or cmp(self.end, other.end)
+    def _cmpkey(self):
+        return (self.start, self.end)
 
     def shift(self, *args, **kwargs):
         """
@@ -57,12 +57,11 @@ class SubRipItem(object):
         if len(lines) < 2:
             raise InvalidItem()
         lines = [l.rstrip() for l in lines]
-
         index = None
         if cls.TIMESTAMP_SEPARATOR not in lines[0]:
             index = lines.pop(0)
         start, end, position = cls.split_timestamps(lines[0])
-        body = u'\n'.join(lines[1:])
+        body = '\n'.join(lines[1:])
         return cls(index, start, end, body, position)
 
     @classmethod

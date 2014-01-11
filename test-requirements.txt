@@ -1,4 +1,3 @@
-argparse
-chardet
+charade
 nose
 coverage

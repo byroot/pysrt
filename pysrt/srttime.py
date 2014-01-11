@@ -6,28 +6,8 @@ import re
 from datetime import time
 
 from pysrt.srtexc import InvalidTimeString
-
-
-class Comparable(object):
-    # pylint: disable-msg=E0211,R0903
-    """
-    Some builtin types like datetime.time don't use the __cmp__ interface.
-    This class map "rich comparison" methods to __cmp__
-    http://docs.python.org/reference/datamodel.html#object.__ge__
-    """
-
-    def __build_comparator(*values):
-        return lambda self, other: self.__cmp__(other) in values
-
-    __eq__ = __build_comparator(0)
-    __ne__ = __build_comparator(-1, 1)
-    __lt__ = __build_comparator(-1)
-    __le__ = __build_comparator(-1, 0)
-    __gt__ = __build_comparator(1)
-    __ge__ = __build_comparator(0, 1)
-
-    del __build_comparator
-
+from pysrt.comparablemixin import ComparableMixin
+from pysrt.compat import str, basestring
 
 class TimeItemDescriptor(object):
     # pylint: disable-msg=R0903
@@ -43,14 +23,14 @@ class TimeItemDescriptor(object):
     def __get__(self, instance, klass):
         if instance is None:
             raise AttributeError
-        return self._get_ordinal(instance) / self.ratio
+        return self._get_ordinal(instance) // self.ratio
 
     def __set__(self, instance, value):
         part = self._get_ordinal(instance) - instance.ordinal % self.ratio
         instance.ordinal += value * self.ratio - part
 
 
-class SubRipTime(Comparable):
+class SubRipTime(ComparableMixin):
     TIME_PATTERN = '%02d:%02d:%02d,%03d'
     TIME_REPR = 'SubRipTime(%d, %d, %d, %d)'
     RE_TIME_SEP = re.compile(r'\:|\.|\,')
@@ -79,17 +59,17 @@ class SubRipTime(Comparable):
     def __repr__(self):
         return self.TIME_REPR % tuple(self)
 
-    def __unicode__(self):
-        return unicode(str(self))
-
     def __str__(self):
         if self.ordinal < 0:
             # Represent negative times as zero
             return str(SubRipTime.from_ordinal(0))
         return self.TIME_PATTERN % tuple(self)
 
-    def __cmp__(self, other):
-        return cmp(self.ordinal, self.coerce(other).ordinal)
+    def _compare(self, other, method):
+        return super(SubRipTime, self)._compare(self.coerce(other), method)
+
+    def _cmpkey(self):
+        return self.ordinal
 
     def __add__(self, other):
         return self.from_ordinal(self.ordinal + self.coerce(other).ordinal)
@@ -127,7 +107,7 @@ class SubRipTime(Comparable):
             return other
         if isinstance(other, basestring):
             return cls.from_string(other)
-        if isinstance(other, (int, long)):
+        if isinstance(other, int):
             return cls.from_ordinal(other)
         if isinstance(other, time):
             return cls.from_time(other)
@@ -186,7 +166,7 @@ class SubRipTime(Comparable):
         datetime.time -> SubRipTime corresponding to time object
         """
         return cls(hours=source.hour, minutes=source.minute,
-            seconds=source.second, milliseconds=source.microsecond / 1000)
+            seconds=source.second, milliseconds=source.microsecond // 1000)
 
     def to_time(self):
         """
