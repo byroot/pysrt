@@ -2,47 +2,26 @@
 import os
 import sys
 import codecs
-from UserList import UserList
+
+try:
+    from collections import UserList
+except ImportError:
+    from UserList import UserList
+
 from itertools import chain
 from copy import copy
 
-try:
-    import charade
-except ImportError:  # For python < 2.6
-    import chardet as charade
-
 from pysrt.srtexc import Error
 from pysrt.srtitem import SubRipItem
+from pysrt.compat import str
 
-BOMS = [(codecs.BOM_UTF16_LE, 'utf_16_le'),
+BOMS = ((codecs.BOM_UTF32_LE, 'utf_32_le'),
+        (codecs.BOM_UTF32_BE, 'utf_32_be'),
+        (codecs.BOM_UTF16_LE, 'utf_16_le'),
         (codecs.BOM_UTF16_BE, 'utf_16_be'),
-        (codecs.BOM_UTF8, 'utf_8')]
-
-CHARADE_ENCODINGS_TRANSLATION = {
-    'UTF-32LE': 'utf_32_le',
-    'UTF-32BE': 'utf_32_be',
-    'UTF-16LE': 'utf_16_le',
-    'UTF-16BE': 'utf_16_be',
-    'UTF-8': 'utf_8'
-}
-
-SUPPORT_UTF_32_LE = True
-try:
-    codecs.lookup('utf_32_le')
-except LookupError:
-    SUPPORT_UTF_32_LE = False
-else:
-    BOMS.insert(0, (codecs.BOM_UTF32_LE, 'utf_32_le'))
-
-SUPPORT_UTF_32_BE = True
-try:
-    codecs.lookup('utf_32_be')
-except LookupError:
-    SUPPORT_UTF_32_BE = False
-else:
-    BOMS.insert(0, (codecs.BOM_UTF32_BE, 'utf_32_be'))
-
-CODECS_BOMS = dict((codec, unicode(bom, codec)) for bom, codec in BOMS)
+        (codecs.BOM_UTF8, 'utf_8'))
+CODECS_BOMS = dict((codec, str(bom, codec)) for bom, codec in BOMS)
+BIGGER_BOM = max(len(bom) for bom, encoding in BOMS)
 
 
 class SubRipFile(UserList, object):
@@ -159,7 +138,7 @@ class SubRipFile(UserList, object):
 
     @property
     def text(self):
-        return u'\n'.join(i.text for i in self)
+        return '\n'.join(i.text for i in self)
 
     @classmethod
     def open(cls, path='', encoding=None, error_handling=ERROR_PASS):
@@ -222,17 +201,7 @@ class SubRipFile(UserList, object):
             ...     print unicode(sub)
         """
         string_buffer = []
-
-        # weird bug workaround
-        if hasattr(source_file, 'seek'):
-            position = source_file.tell()
-            # under Python 2.5 this call return the second line of the file
-            # instead of the first character. It's probably a buffering bug
-            # in the codecs module. I've not found a better fix...
-            source_file.read(1)
-            source_file.seek(position)
-
-        for index, line in enumerate(chain(source_file, u'\n')):
+        for index, line in enumerate(chain(source_file, '\n')):
             if line.strip():
                 string_buffer.append(line)
             else:
@@ -241,7 +210,7 @@ class SubRipFile(UserList, object):
                 if source and all(source):
                     try:
                         yield SubRipItem.from_lines(source)
-                    except Error, error:
+                    except Error as error:
                         error.args += (''.join(source), )
                         cls._handle_error(error, error_handling, index)
 
@@ -272,7 +241,7 @@ class SubRipFile(UserList, object):
         output_eol = eol or self.eol
 
         for item in self:
-            string_repr = unicode(item)
+            string_repr = str(item)
             if output_eol != '\n':
                 string_repr = string_repr.replace('\n', output_eol)
             output_file.write(string_repr)
@@ -297,37 +266,31 @@ class SubRipFile(UserList, object):
             previous_position = string_iterable.tell()
 
         try:
-            first_line = iter(string_iterable).next()
+            first_line = next(iter(string_iterable))
         except StopIteration:
             return ''
         if hasattr(string_iterable, 'seek'):
             string_iterable.seek(previous_position)
+
         return first_line
 
     @classmethod
     def _detect_encoding(cls, path):
-        sample = open(path).read(1024)
+        file_descriptor = open(path, 'rb')
+        first_chars = file_descriptor.read(BIGGER_BOM)
+        file_descriptor.close()
 
         for bom, encoding in BOMS:
-            if sample.startswith(bom):
+            if first_chars.startswith(bom):
                 return encoding
 
-        report = charade.detect(sample)
-        encoding = report.get('encoding')
-        if not encoding:
-            return cls.DEFAULT_ENCODING
-        return cls._normalize_encoding(encoding)
-
-    @classmethod
-    def _normalize_encoding(cls, encoding):
-        if encoding in CHARADE_ENCODINGS_TRANSLATION:
-            return CHARADE_ENCODINGS_TRANSLATION[encoding]
-        return encoding.lower().replace('-', '_')
+        # TODO: maybe a chardet integration
+        return cls.DEFAULT_ENCODING
 
     @classmethod
     def _open_unicode_file(cls, path, claimed_encoding=None):
         encoding = claimed_encoding or cls._detect_encoding(path)
-        source_file = codecs.open(path, 'r', encoding=encoding)
+        source_file = codecs.open(path, 'rU', encoding=encoding)
 
         # get rid of BOM if any
         possible_bom = CODECS_BOMS.get(encoding, None)
