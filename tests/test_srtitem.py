@@ -42,6 +42,21 @@ class TestDuration(unittest.TestCase):
 
     def test_duration(self):
         self.assertEqual(self.item.duration, (0,0,20,0))
+    
+
+class TestCPS(unittest.TestCase):
+
+    def setUp(self):
+        self.item = SubRipItem(1, text="Hello world !")
+        self.item.shift(minutes=1)
+        self.item.end.shift(seconds=20)
+
+    def test_cps(self):
+        self.assertEqual(self.item.cps, 0.65)
+
+    def test_text_change(self):
+        self.item.text = "Hello world !\nHello world again !"
+        self.assertEqual(self.item.cps, 1.6)
 
 
 class TestShifting(unittest.TestCase):
@@ -56,6 +71,7 @@ class TestShifting(unittest.TestCase):
         self.assertEqual(self.item.start, (1, 3, 3, 4))
         self.assertEqual(self.item.end, (1, 3, 23, 4))
         self.assertEqual(self.item.duration, (0,0,20,0))
+        self.assertEqual(self.item.cps, 0.65)
 
     def test_shift_down(self):
         self.item.shift(5)
@@ -63,12 +79,14 @@ class TestShifting(unittest.TestCase):
         self.assertEqual(self.item.start, (3, 58, 56, 996))
         self.assertEqual(self.item.end, (3, 59, 16, 996))
         self.assertEqual(self.item.duration, (0,0,20,0))
+        self.assertEqual(self.item.cps, 0.65)
 
     def test_shift_by_ratio(self):
         self.item.shift(ratio=2)
         self.assertEqual(self.item.start, {'minutes': 2})
         self.assertEqual(self.item.end, {'minutes': 2, 'seconds': 40})
         self.assertEqual(self.item.duration, (0,0,40,0))
+        self.assertEqual(self.item.cps, 0.33)
 
 
 class TestOperators(unittest.TestCase):
