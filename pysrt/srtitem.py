@@ -30,6 +30,10 @@ class SubRipItem(ComparableMixin):
         self.position = str(position)
         self.text = str(text)
 
+    @property
+    def duration(self):
+        return self.end - self.start
+
     def __str__(self):
         position = ' %s' % self.position if self.position.strip() else ''
         return self.ITEM_PATTERN % (self.index, self.start, self.end,
