@@ -43,6 +43,15 @@ class TestDuration(unittest.TestCase):
     def test_duration(self):
         self.assertEqual(self.item.duration, (0,0,20,0))
 
+class TestDuration(unittest.TestCase):
+
+    def setUp(self):
+        self.item = SubRipItem(1, text="Hello world !")
+        self.item.shift(minutes=1)
+        self.item.end.shift(seconds=20)
+
+    def test_duration(self):
+        self.assertEqual(self.item.duration, (0,0,20,0))
 
 class TestShifting(unittest.TestCase):
 
@@ -150,3 +159,4 @@ class TestSerialAndParsing(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+

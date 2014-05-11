@@ -29,6 +29,10 @@ class SubRipItem(ComparableMixin):
         self.end = SubRipTime.coerce(end or 0)
         self.position = str(position)
         self.text = str(text)
+        
+    @property
+    def duration(self):
+        return self.end - self.start
 
     @property
     def duration(self):
