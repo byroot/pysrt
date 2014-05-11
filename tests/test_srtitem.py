@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.abspath(file_path))
 from pysrt import SubRipItem, SubRipTime, InvalidItem
 from pysrt.compat import basestring
 
+
 class TestAttributes(unittest.TestCase):
 
     def setUp(self):
@@ -31,7 +32,7 @@ class TestAttributes(unittest.TestCase):
     def test_has_end(self):
         self.assertTrue(hasattr(self.item, 'end'))
         self.assertTrue(isinstance(self.item.end, SubRipTime))
-        
+
 
 class TestDuration(unittest.TestCase):
 
@@ -41,7 +42,22 @@ class TestDuration(unittest.TestCase):
         self.item.end.shift(seconds=20)
 
     def test_duration(self):
-        self.assertEqual(self.item.duration, (0,0,20,0))
+        self.assertEqual(self.item.duration, (0, 0, 20, 0))
+
+
+class TestCPS(unittest.TestCase):
+
+    def setUp(self):
+        self.item = SubRipItem(1, text="Hello world !")
+        self.item.shift(minutes=1)
+        self.item.end.shift(seconds=20)
+
+    def test_characters_per_second(self):
+        self.assertEqual(self.item.characters_per_second, 0.65)
+
+    def test_text_change(self):
+        self.item.text = "Hello world !\nHello world again !"
+        self.assertEqual(self.item.characters_per_second, 1.6)
 
 
 class TestShifting(unittest.TestCase):
@@ -55,20 +71,23 @@ class TestShifting(unittest.TestCase):
         self.item.shift(1, 2, 3, 4)
         self.assertEqual(self.item.start, (1, 3, 3, 4))
         self.assertEqual(self.item.end, (1, 3, 23, 4))
-        self.assertEqual(self.item.duration, (0,0,20,0))
+        self.assertEqual(self.item.duration, (0, 0, 20, 0))
+        self.assertEqual(self.item.characters_per_second, 0.65)
 
     def test_shift_down(self):
         self.item.shift(5)
         self.item.shift(-1, -2, -3, -4)
         self.assertEqual(self.item.start, (3, 58, 56, 996))
         self.assertEqual(self.item.end, (3, 59, 16, 996))
-        self.assertEqual(self.item.duration, (0,0,20,0))
+        self.assertEqual(self.item.duration, (0, 0, 20, 0))
+        self.assertEqual(self.item.characters_per_second, 0.65)
 
     def test_shift_by_ratio(self):
         self.item.shift(ratio=2)
         self.assertEqual(self.item.start, {'minutes': 2})
         self.assertEqual(self.item.end, {'minutes': 2, 'seconds': 40})
-        self.assertEqual(self.item.duration, (0,0,40,0))
+        self.assertEqual(self.item.duration, (0, 0, 40, 0))
+        self.assertEqual(self.item.characters_per_second, 0.325)
 
 
 class TestOperators(unittest.TestCase):
