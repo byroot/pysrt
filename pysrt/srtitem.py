@@ -7,6 +7,7 @@ from pysrt.srttime import SubRipTime
 from pysrt.comparablemixin import ComparableMixin
 from pysrt.compat import str
 
+
 class SubRipItem(ComparableMixin):
     """
     SubRipItem(index, start, end, text, position)
@@ -22,7 +23,7 @@ class SubRipItem(ComparableMixin):
     def __init__(self, index=0, start=None, end=None, text='', position=''):
         try:
             self.index = int(index)
-        except (TypeError, ValueError): # try to cast as int, but it's not mandatory
+        except (TypeError, ValueError):  # try to cast as int, but it's not mandatory
             self.index = index
 
         self.start = SubRipTime.coerce(start or 0)
@@ -33,6 +34,13 @@ class SubRipItem(ComparableMixin):
     @property
     def duration(self):
         return self.end - self.start
+
+    @property
+    def cps(self):
+        characters = len(self.text) - self.text.count('\n')
+        duration_seconds = self.duration.hours*3600 + self.duration.minutes*60
+                 + self.duration.seconds + self.duration.milliseconds / 1000.0
+        return round(characters / duration_seconds, 2)
 
     def __str__(self):
         position = ' %s' % self.position if self.position.strip() else ''
