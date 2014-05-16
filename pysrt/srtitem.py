@@ -38,7 +38,10 @@ class SubRipItem(ComparableMixin):
     @property
     def characters_per_second(self):
         characters_count = len(self.text.replace('\n', ''))
-        return characters_count / (self.duration.ordinal / 1000.0)
+        try:
+            return characters_count / (self.duration.ordinal / 1000.0)
+        except ZeroDivisionError:
+            return 0.0
 
     def __str__(self):
         position = ' %s' % self.position if self.position.strip() else ''

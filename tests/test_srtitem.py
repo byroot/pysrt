@@ -59,6 +59,10 @@ class TestCPS(unittest.TestCase):
         self.item.text = "Hello world !\nHello world again !"
         self.assertEqual(self.item.characters_per_second, 1.6)
 
+    def test_zero_duration(self):
+        self.item.start.shift(seconds = 20)
+        self.assertEqual(self.item.characters_per_second, 0.0)
+
 
 class TestShifting(unittest.TestCase):
 
