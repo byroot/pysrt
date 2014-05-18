@@ -27,6 +27,7 @@ class TestOpen(unittest.TestCase):
 
     def test_utf8(self):
         self.assertEqual(len(pysrt.open(self.utf8_path)), 1332)
+        self.assertEqual(pysrt.open(self.utf8_path).encoding, 'utf_8')
         self.assertRaises(UnicodeDecodeError, pysrt.open,
             self.windows_path)
 
