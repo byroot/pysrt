@@ -2,6 +2,8 @@
 """
 SubRip's subtitle parser
 """
+
+import sys
 from pysrt.srtexc import InvalidItem, InvalidIndex
 from pysrt.srttime import SubRipTime
 from pysrt.comparablemixin import ComparableMixin
@@ -40,10 +42,19 @@ class SubRipItem(ComparableMixin):
         characters_count = len(self.text.replace('\n', ''))
         return characters_count / (self.duration.ordinal / 1000.0)
 
-    def __str__(self):
-        position = ' %s' % self.position if self.position.strip() else ''
-        return self.ITEM_PATTERN % (self.index, self.start, self.end,
-                                    position, self.text)
+    if sys.version_info[0] == 3:
+        def __str__(self):
+            position = ' %s' % self.position if self.position.strip() else ''
+            return self.ITEM_PATTERN % (self.index, self.start, self.end,
+                                        position, self.text)
+    else:                
+        def __unicode__(self):
+            position = ' %s' % self.position if self.position.strip() else ''
+            return self.ITEM_PATTERN % (self.index, self.start, self.end,
+                                        position, self.text)
+        def __str__(self):
+            raise NotImplementedError("Use unicode() instead!")
+
 
     def _cmpkey(self):
         return (self.start, self.end)
