@@ -10,6 +10,7 @@ sys.path.insert(0, os.path.abspath(file_path))
 
 from pysrt import SubRipItem, SubRipTime, InvalidItem
 from pysrt.compat import basestring
+from pysrt.compat import str
 
 
 class TestAttributes(unittest.TestCase):
