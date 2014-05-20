@@ -21,7 +21,7 @@ class SubRipItem(ComparableMixin):
     ITEM_PATTERN = str('%s\n%s --> %s%s\n%s\n')
     TIMESTAMP_SEPARATOR = '-->'
 
-    def __init__(self, index=0, start=None, end=None, text='', position=''):
+    def __init__(self, index=0, start=None, end=None, text='', position='', parent=None):
         try:
             self.index = int(index)
         except (TypeError, ValueError):  # try to cast as int, but it's not mandatory
@@ -31,6 +31,23 @@ class SubRipItem(ComparableMixin):
         self.end = SubRipTime.coerce(end or 0)
         self.position = str(position)
         self.text = str(text)
+        self.parent = parent
+
+    @property
+    def previous(self):
+        index = self.parent.index(self) - 1
+        if index >= 0:
+            return self.parent[index]
+        else:
+            return None
+
+    @property
+    def next(self):
+        index = self.parent.index(self) + 1
+        if index < len(self.parent):
+            return self.parent[index]
+        else:
+            return None
 
     @property
     def duration(self):
@@ -68,11 +85,11 @@ class SubRipItem(ComparableMixin):
         self.end.shift(*args, **kwargs)
 
     @classmethod
-    def from_string(cls, source):
-        return cls.from_lines(source.splitlines(True))
+    def from_string(cls, source, parent=None):
+        return cls.from_lines(source.splitlines(True), parent=parent)
 
     @classmethod
-    def from_lines(cls, lines):
+    def from_lines(cls, lines, parent=None):
         if len(lines) < 2:
             raise InvalidItem()
         lines = [l.rstrip() for l in lines]
@@ -81,7 +98,7 @@ class SubRipItem(ComparableMixin):
             index = lines.pop(0)
         start, end, position = cls.split_timestamps(lines[0])
         body = '\n'.join(lines[1:])
-        return cls(index, start, end, body, position)
+        return cls(index, start, end, body, position, parent)
 
     @classmethod
     def split_timestamps(cls, line):

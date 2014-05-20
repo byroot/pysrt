@@ -178,11 +178,11 @@ class SubRipFile(UserList, object):
             opened with `codecs.open()` or an array of unicode.
         """
         self.eol = self._guess_eol(source_file)
-        self.extend(self.stream(source_file, error_handling=error_handling))
+        self.extend(self.stream(source_file, error_handling=error_handling, parent=self))
         return self
 
     @classmethod
-    def stream(cls, source_file, error_handling=ERROR_PASS):
+    def stream(cls, source_file, error_handling=ERROR_PASS, parent=None):
         """
         stream(source_file, [error_handling])
 
@@ -209,7 +209,7 @@ class SubRipFile(UserList, object):
                 string_buffer = []
                 if source and all(source):
                     try:
-                        yield SubRipItem.from_lines(source)
+                        yield SubRipItem.from_lines(source, parent)
                     except Error as error:
                         error.args += (''.join(source), )
                         cls._handle_error(error, error_handling, index)
