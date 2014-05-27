@@ -7,6 +7,7 @@ from pysrt.srtexc import InvalidItem, InvalidIndex
 from pysrt.srttime import SubRipTime
 from pysrt.comparablemixin import ComparableMixin
 from pysrt.compat import str, is_py2
+import re
 
 
 class SubRipItem(ComparableMixin):
@@ -37,8 +38,13 @@ class SubRipItem(ComparableMixin):
         return self.end - self.start
 
     @property
+    def text_without_tags(self):
+        RE_TAG = re.compile(r'<[^>]*?>')
+        return RE_TAG.sub('', self.text)
+
+    @property
     def characters_per_second(self):
-        characters_count = len(self.text.replace('\n', ''))
+        characters_count = len(self.text_without_tags.replace('\n', ''))
         try:
             return characters_count / (self.duration.ordinal / 1000.0)
         except ZeroDivisionError:

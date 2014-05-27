@@ -64,6 +64,43 @@ class TestCPS(unittest.TestCase):
         self.item.start.shift(seconds = 20)
         self.assertEqual(self.item.characters_per_second, 0.0)
 
+    def test_tags(self):
+	    self.item.text = '<b>bold</b>, <i>italic</i>, <u>underlined</u>\n' + \
+	    '<font color="#ff0000">red text</font>' + \
+	    ', <b>one,<i> two,<u> three</u></i></b>'
+	    self.assertEqual(self.item.characters_per_second, 2.45)
+
+
+class TestTagRemoval(unittest.TestCase):
+
+    def setUp(self):
+        self.item = SubRipItem(1, text="Hello world !")
+        self.item.shift(minutes=1)
+        self.item.end.shift(seconds=20)
+
+    def test_italics_tag(self):
+        self.item.text = "<i>Hello world !</i>"
+        self.assertEqual(self.item.text_without_tags,'Hello world !')
+        
+    def test_bold_tag(self):
+        self.item.text = "<b>Hello world !</b>"
+        self.assertEqual(self.item.text_without_tags,'Hello world !')
+
+    def test_underline_tag(self):
+        self.item.text = "<u>Hello world !</u>"
+        self.assertEqual(self.item.text_without_tags,'Hello world !')
+
+    def test_color_tag(self):
+        self.item.text = '<font color="#ff0000">Hello world !</font>'
+        self.assertEqual(self.item.text_without_tags,'Hello world !')
+
+    def test_all_tags(self):
+        self.item.text = '<b>Bold</b>, <i>italic</i>, <u>underlined</u>\n' + \
+        '<font color="#ff0000">red text</font>' + \
+        ', <b>one,<i> two,<u> three</u></i></b>.'
+        self.assertEqual(self.item.text_without_tags,'Bold, italic, underlined' + \
+                '\nred text, one, two, three.')
+
 
 class TestShifting(unittest.TestCase):
 
