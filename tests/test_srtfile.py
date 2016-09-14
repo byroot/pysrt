@@ -150,7 +150,8 @@ class TestText(unittest.TestCase):
 class TestDuckTyping(unittest.TestCase):
 
     def setUp(self):
-        self.duck = SubRipFile()
+        self.duck = pysrt.open(os.path.join(file_path, 'tests', 'static',
+            'utf-8.srt'))
 
     def test_act_as_list(self):
         self.assertTrue(iter(self.duck))
@@ -166,6 +167,10 @@ class TestDuckTyping(unittest.TestCase):
         self.assertTrue(hasattr(self.duck, '__getitem__'))
         self.assertTrue(hasattr(self.duck, '__setitem__'))
         self.assertTrue(hasattr(self.duck, '__delitem__'))
+
+    def test_can_be_enumerated(self):
+        subs = list(enumerate(self.duck))
+        self.assertEqual(subs[0][0], 0)
 
 
 class TestEOLProperty(unittest.TestCase):
