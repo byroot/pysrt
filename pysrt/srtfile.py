@@ -51,6 +51,9 @@ class SubRipFile(UserList, object):
         self.path = path
         self.encoding = encoding
 
+    def __getitem__(self, index):
+        return self.data[index]
+
     def _get_eol(self):
         return self._eol or os.linesep
 
