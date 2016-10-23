@@ -101,11 +101,10 @@ class SubRipTime(ComparableMixin):
         return self
 
     def __truediv__(self, ratio):
-        return self.from_ordinal(int(round(self.ordinal / ratio)))
+        return self.__div__(ratio)
 
     def __itruediv__(self, ratio):
-        self.ordinal = int(round(self.ordinal / ratio))
-        return self
+        return self.__idiv__(ratio)
 
     @classmethod
     def coerce(cls, other):
