@@ -150,7 +150,6 @@ class TestOperators(unittest.TestCase):
         self.assertEqual(self.time / 0.5, SubRipTime(2, 4, 6, 8))
         self.assertEqual(self.time / 2, (0, 31, 1, 502))
 
-
     def test_idiv(self):
         self.time /= 0.5
         self.assertEqual(self.time, (2, 4, 6, 8))
