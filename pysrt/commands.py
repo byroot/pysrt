@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # pylint: disable-all
+from __future__ import print_function
 
 import os
 import re
@@ -139,7 +140,7 @@ class SubRipShifter(object):
             self.arguments.action()
 
         else:
-            print 'No such file', self.arguments.file
+            print('No such file', self.arguments.file)
 
     def parse_time(self, time_string):
         negative = time_string.startswith('-')
