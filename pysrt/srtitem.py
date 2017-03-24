@@ -58,7 +58,7 @@ class SubRipItem(ComparableMixin):
         __unicode__ = __str__
 
         def __str__(self):
-            raise NotImplementedError('Use unicode() instead!')
+            raise NotImplementedError('Use unicode() instead for python 2!')
 
     def _cmpkey(self):
         return (self.start, self.end)
