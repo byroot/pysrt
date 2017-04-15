@@ -253,5 +253,23 @@ class TestIntegration(unittest.TestCase):
         items = pysrt.open(os.path.join(self.base_path, 'no-indexes.srt'))
         self.assertEquals(len(items), 7)
 
+class TestRemoveOverlaps(unittest.TestCase):
+    """
+    Test the remove_overlap function
+    """
+    
+    def setUp(self):
+        self.base_path = os.path.join(file_path, 'tests', 'static')
+    
+    def test_remove_overlaps(self):
+        path = os.path.join(self.base_path, 'overlapping-dialogues.srt')
+        file = pysrt.open(path)
+        file.remove_overlaps()
+        
+        for i in range(1, len(file)):
+            previous_end = file[i - 1].end.to_millis()
+            current_start = file[i].start.to_millis()
+            self.assertTrue(previous_end < current_start)
+
 if __name__ == '__main__':
     unittest.main()

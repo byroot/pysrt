@@ -166,6 +166,36 @@ class SubRipFile(UserList, object):
         new_file = cls(**kwargs)
         new_file.read(source.splitlines(True), error_handling=error_handling)
         return new_file
+    
+    def to_string(self):
+        """
+        returns the subtitles as a string
+        """
+        output = []
+        for sub in self:
+            output.append(str(sub))        
+        return '\n'.join(output)
+    
+    def remove_overlaps(self):
+        """
+        Adjusts start times of overlapping subtitles to remove overlap
+        """
+        i = 1
+        while i < len(self):
+            previous_end = self[i - 1].end.to_millis()
+            current_start = self[i].start.to_millis()
+            current_end = self[i].end.to_millis()
+            
+            if current_start <= previous_end:
+                current_start = previous_end + 1
+            
+            if current_start >= current_end:
+                self.pop(i)
+                self.clean_indexes()
+            
+            else:
+                self[i].start.from_millis(current_start)
+                i += 1
 
     def read(self, source_file, error_handling=ERROR_PASS):
         """
