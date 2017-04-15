@@ -188,12 +188,12 @@ class SubRipFile(UserList, object):
             
             if current_start <= previous_end:
                 current_start = previous_end + 1
+                self[i].start.from_millis(current_start)
             
             if current_start >= current_end:
                 self.pop(i)
             
             else:
-                self[i].start.from_millis(current_start)
                 i += 1
 
     def read(self, source_file, error_handling=ERROR_PASS):
