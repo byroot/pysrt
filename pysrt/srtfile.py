@@ -191,7 +191,6 @@ class SubRipFile(UserList, object):
             
             if current_start >= current_end:
                 self.pop(i)
-                self.clean_indexes()
             
             else:
                 self[i].start.from_millis(current_start)
