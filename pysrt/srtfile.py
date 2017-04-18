@@ -187,7 +187,7 @@ class SubRipFile(UserList, object):
             current_end = self[i].end.to_millis()
             
             if current_start < previous_end:
-                current_start = previous_end + 1
+                current_start = previous_end
                 self[i].start.from_millis(current_start)
             
             if current_start >= current_end:
