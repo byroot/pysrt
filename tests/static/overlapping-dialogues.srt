@@ -1,0 +1,17 @@
+﻿1
+00:00:0,000 --> 00:00:01,000
+I am the 1st dialogue
+
+2
+00:00:00,500 --> 00:00:02,500
+I am the 2nd dialogue
+I am overlapping the 1st and 3rd
+
+3
+00:00:00,250 --> 00:00:02,300
+I am the 3rd dialogue, but I'm completely overlapped by the 2nd
+I should be removed
+
+4
+00:00:02,000 --> 00:00:03,000
+I am the 4th dialogue
