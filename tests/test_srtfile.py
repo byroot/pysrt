@@ -269,7 +269,7 @@ class TestRemoveOverlaps(unittest.TestCase):
         for i in range(1, len(file)):
             previous_end = file[i - 1].end.to_millis()
             current_start = file[i].start.to_millis()
-            self.assertTrue(previous_end < current_start)
+            self.assertTrue(previous_end <= current_start)
 
 if __name__ == '__main__':
     unittest.main()
