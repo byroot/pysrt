@@ -9,9 +9,6 @@ pysrt is a Python library used to edit or create SubRip files.
   :target: https://coveralls.io/r/byroot/pysrt?branch=master
 .. image:: https://img.shields.io/pypi/v/pysrt.svg
   :target: https://crate.io/packages/pysrt/
-.. image:: https://img.shields.io/pypi/dm/pysrt.svg
-  :target: https://crate.io/packages/pysrt/
-
 
 Foreword
 ====================
