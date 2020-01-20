@@ -90,14 +90,14 @@ class TestSerialization(unittest.TestCase):
         os.remove(self.temp_path)
 
     def test_eol_conversion(self):
-        input_file = open(self.windows_path, 'rU', encoding='windows-1252')
+        input_file = open(self.windows_path, 'r', encoding='windows-1252')
         input_file.read()
         self.assertEqual(input_file.newlines, '\r\n')
 
         srt_file = pysrt.open(self.windows_path, encoding='windows-1252')
         srt_file.save(self.temp_path, eol='\n')
 
-        output_file = open(self.temp_path, 'rU', encoding='windows-1252')
+        output_file = open(self.temp_path, 'r', encoding='windows-1252')
         output_file.read()
         self.assertEqual(output_file.newlines, '\n')
 
