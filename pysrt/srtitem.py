@@ -20,7 +20,7 @@ class SubRipItem(ComparableMixin):
     position -> unicode: raw srt/vtt "display coordinates" string
     """
     ITEM_PATTERN = str('%s\n%s --> %s%s\n%s\n')
-    TIMESTAMP_SEPARATOR = '-->'
+    TIMESTAMP_SEPARATOR = '->'
 
     def __init__(self, index=0, start=None, end=None, text='', position=''):
         try:
@@ -95,6 +95,8 @@ class SubRipItem(ComparableMixin):
         if len(timestamps) != 2:
             raise InvalidItem()
         start, end_and_position = timestamps
+        if start.endswith('-'):
+            start = start[:-1]
         end_and_position = end_and_position.lstrip().split(' ', 1)
         end = end_and_position[0]
         position = end_and_position[1] if len(end_and_position) > 1 else ''
