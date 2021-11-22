@@ -35,7 +35,7 @@ class SubRipFile(UserList, object):
     items -> list of SubRipItem. Default to [].
     eol -> str: end of line character. Default to linesep used in opened file
         if any else to os.linesep.
-    path -> str: path where file will be saved. To open an existant file see
+    path -> str: path where file will be saved. To open an existent file see
         SubRipFile.open.
     encoding -> str: encoding used at file save. Default to utf-8.
     """
