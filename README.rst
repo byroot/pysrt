@@ -37,7 +37,7 @@ Rescaling: ::
 Installation
 =================
 
-pysrt is available on pypi. To intall it you can use either
+pysrt is available on pypi. To install it you can use either
 
 pip: ::
     
