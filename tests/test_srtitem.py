@@ -197,17 +197,17 @@ class TestSerialAndParsing(unittest.TestCase):
 
     def test_string_index(self):
         item = SubRipItem.from_string(self.string_index)
-        self.assertEquals(item.index, 'foo')
-        self.assertEquals(item.text, 'Hello !')
+        self.assertEqual(item.index, 'foo')
+        self.assertEqual(item.text, 'Hello !')
 
     def test_no_index(self):
         item = SubRipItem.from_string(self.no_index)
-        self.assertEquals(item.index, None)
-        self.assertEquals(item.text, 'Hello world !')
+        self.assertEqual(item.index, None)
+        self.assertEqual(item.text, 'Hello world !')
 
     def test_junk_after_timestamp(self):
         item = SubRipItem.from_string(self.junk_after_timestamp)
-        self.assertEquals(item, self.item)
+        self.assertEqual(item, self.item)
 
 if __name__ == '__main__':
     unittest.main()
