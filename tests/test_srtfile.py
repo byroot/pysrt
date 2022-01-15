@@ -117,8 +117,8 @@ class TestSlice(unittest.TestCase):
                           459)
 
     def test_at(self):
-        self.assertEquals(len(self.file.at((0, 0, 31, 0))), 1)
-        self.assertEquals(len(self.file.at(seconds=31)), 1)
+        self.assertEqual(len(self.file.at((0, 0, 31, 0))), 1)
+        self.assertEqual(len(self.file.at(seconds=31)), 1)
 
 
 class TestShifting(unittest.TestCase):
@@ -137,14 +137,14 @@ class TestText(unittest.TestCase):
         srt_file = SubRipFile([
             SubRipItem(1, {'seconds': 1}, {'seconds': 2}, 'Hello')
         ])
-        self.assertEquals(srt_file.text, 'Hello')
+        self.assertEqual(srt_file.text, 'Hello')
 
     def test_multiple_item(self):
         srt_file = SubRipFile([
             SubRipItem(1, {'seconds': 0}, {'seconds': 3}, 'Hello'),
             SubRipItem(1, {'seconds': 1}, {'seconds': 2}, 'World !')
         ])
-        self.assertEquals(srt_file.text, 'Hello\nWorld !')
+        self.assertEqual(srt_file.text, 'Hello\nWorld !')
 
 
 class TestDuckTyping(unittest.TestCase):
@@ -251,7 +251,7 @@ class TestIntegration(unittest.TestCase):
 
     def test_missing_indexes(self):
         items = pysrt.open(os.path.join(self.base_path, 'no-indexes.srt'))
-        self.assertEquals(len(items), 7)
+        self.assertEqual(len(items), 7)
 
 if __name__ == '__main__':
     unittest.main()
