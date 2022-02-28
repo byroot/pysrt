@@ -81,7 +81,7 @@ class TestTagRemoval(unittest.TestCase):
     def test_italics_tag(self):
         self.item.text = "<i>Hello world !</i>"
         self.assertEqual(self.item.text_without_tags,'Hello world !')
-        
+
     def test_bold_tag(self):
         self.item.text = "<b>Hello world !</b>"
         self.assertEqual(self.item.text_without_tags,'Hello world !')
@@ -126,10 +126,10 @@ class TestShifting(unittest.TestCase):
 
     def test_shift_by_ratio(self):
         self.item.shift(ratio=2)
-        self.assertEqual(self.item.start, {'minutes': 2})
-        self.assertEqual(self.item.end, {'minutes': 2, 'seconds': 40})
-        self.assertEqual(self.item.duration, (0, 0, 40, 0))
-        self.assertEqual(self.item.characters_per_second, 0.325)
+        self.assertEqual(self.item.start, {'seconds': 30})
+        self.assertEqual(self.item.end, {'seconds': 40})
+        self.assertEqual(self.item.duration, (0, 0, 10, 0))
+        self.assertEqual(self.item.characters_per_second, 1.3)
 
 
 class TestOperators(unittest.TestCase):

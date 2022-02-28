@@ -93,6 +93,19 @@ class SubRipTime(ComparableMixin):
         self.ordinal = int(round(self.ordinal * ratio))
         return self
 
+    def __div__(self, ratio):
+        return self.from_ordinal(int(round(self.ordinal / ratio)))
+
+    def __idiv__(self, ratio):
+        self.ordinal = int(round(self.ordinal / ratio))
+        return self
+
+    def __truediv__(self, ratio):
+        return self.__div__(ratio)
+
+    def __itruediv__(self, ratio):
+        return self.__idiv__(ratio)
+
     @classmethod
     def coerce(cls, other):
         """
@@ -130,7 +143,7 @@ class SubRipTime(ComparableMixin):
         All arguments are optional and have a default value of 0.
         """
         if 'ratio' in kwargs:
-            self *= kwargs.pop('ratio')
+            self /= kwargs.pop('ratio')
         self += self.__class__(*args, **kwargs)
 
     @classmethod

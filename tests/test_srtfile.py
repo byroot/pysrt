@@ -128,7 +128,7 @@ class TestShifting(unittest.TestCase):
         srt_file.shift(1, 1, 1, 1)
         self.assertEqual(srt_file[0].end, (1, 1, 1, 1))
         srt_file.shift(ratio=2)
-        self.assertEqual(srt_file[0].end, (2, 2, 2, 2))
+        self.assertEqual(srt_file[0].end, (0, 30, 30, 500))
 
 
 class TestText(unittest.TestCase):
