@@ -251,7 +251,22 @@ class SubRipFile(UserList, object):
             # which already contain a trailing eol though.
             if not string_repr.endswith(2 * output_eol):
                 output_file.write(output_eol)
+                
+    def export(self, eol = None):
+        """Exports returns the contents of srt as str"""
+        output_eol = eol or self.eol
+        output_text = ''
 
+        for item in self:
+            string_repr = str(item)
+            if output_eol != '\n':
+                string_repr = string_repr.replace('\n', output_eol)
+            output_text += string_repr
+            if not string_repr.endswith(2 * output_eol):
+                output_text += output_eol
+
+        return output_text 
+    
     @classmethod
     def _guess_eol(cls, string_iterable):
         first_line = cls._get_first_line(string_iterable)
