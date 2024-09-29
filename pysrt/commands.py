@@ -87,6 +87,11 @@ class SubRipShifter(object):
                 $ srt split 20m 20m movie.srt
                 => creates movie.1.srt, movie.2.srt and movie.3.srt
     """)
+    REINDEX_EPILOG = dedent("""\
+
+        Examples:
+                $ srt -i reindex movie.srt
+    """)
     FRAME_RATE_HELP = "A frame rate in fps (commonly 23.9 or 25)"
     ENCODING_HELP = dedent("""\
         Change file encoding. Useful for players accepting only latin1 subtitles.
@@ -113,6 +118,9 @@ class SubRipShifter(object):
         shift_parser.add_argument('time_offset', action='store', metavar=underline('offset'),
             type=self.parse_time, help=self.TIMESTAMP_HELP)
         shift_parser.set_defaults(action=self.shift)
+
+        enum_parser = subparsers.add_parser('reindex', help="Sort & re-enumerate subtitles (eg. after merge)", epilog=self.REINDEX_EPILOG, formatter_class=argparse.RawTextHelpFormatter)
+        enum_parser.set_defaults(action=self.reindex)
 
         rate_parser = subparsers.add_parser('rate', help="Convert subtitles from a frame rate to another", epilog=self.RATE_EPILOG, formatter_class=argparse.RawTextHelpFormatter)
         rate_parser.add_argument('initial', action='store', type=float, help=self.FRAME_RATE_HELP)
@@ -159,6 +167,10 @@ class SubRipShifter(object):
 
     def shift(self):
         self.input_file.shift(milliseconds=self.arguments.time_offset)
+        self.input_file.write_into(self.output_file)
+
+    def reindex(self):
+        self.input_file.clean_indexes()
         self.input_file.write_into(self.output_file)
 
     def rate(self):
