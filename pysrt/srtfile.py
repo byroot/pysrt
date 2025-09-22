@@ -35,7 +35,7 @@ class SubRipFile(UserList, object):
     items -> list of SubRipItem. Default to [].
     eol -> str: end of line character. Default to linesep used in opened file
         if any else to os.linesep.
-    path -> str: path where file will be saved. To open an existant file see
+    path -> str: path where file will be saved. To open an existent file see
         SubRipFile.open.
     encoding -> str: encoding used at file save. Default to utf-8.
     """
@@ -290,7 +290,7 @@ class SubRipFile(UserList, object):
     @classmethod
     def _open_unicode_file(cls, path, claimed_encoding=None):
         encoding = claimed_encoding or cls._detect_encoding(path)
-        source_file = codecs.open(path, 'rU', encoding=encoding)
+        source_file = codecs.open(path, 'r', encoding=encoding)
 
         # get rid of BOM if any
         possible_bom = CODECS_BOMS.get(encoding, None)

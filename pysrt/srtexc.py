@@ -12,7 +12,7 @@ class Error(Exception):
 
 class InvalidTimeString(Error):
     """
-    Raised when parser fail on bad formated time strings
+    Raised when parser fail on bad formatted time strings
     """
     pass
 
