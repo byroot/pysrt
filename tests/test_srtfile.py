@@ -45,6 +45,23 @@ class TestOpen(unittest.TestCase):
 
 class TestFromString(unittest.TestCase):
 
+    def test_error_log_continues_after_invalid_unicode_block(self):
+        source = (u'not a subtitle\ncaf\u00e9\n\n'
+                  '1\n00:00:01,000 --> 00:00:02,000\nHello\n')
+        previous_stderr = sys.stderr
+        output = StringIO()
+        try:
+            sys.stderr = output
+            subtitles = pysrt.from_string(
+                source, error_handling=SubRipFile.ERROR_LOG)
+        finally:
+            sys.stderr = previous_stderr
+
+        self.assertEqual(len(subtitles), 1)
+        self.assertEqual(subtitles[0].text, 'Hello')
+        self.assertIn('PySRT-', output.getvalue())
+        self.assertIn('caf?', output.getvalue())
+
     def setUp(self):
         self.static_path = os.path.join(file_path, 'tests', 'static')
         self.utf8_path = os.path.join(self.static_path, 'utf-8.srt')

@@ -308,5 +308,5 @@ class SubRipFile(UserList, object):
         if error_handling == cls.ERROR_LOG:
             name = type(error).__name__
             sys.stderr.write('PySRT-%s(line %s): \n' % (name, index))
-            sys.stderr.write(error.args[0].encode('ascii', 'replace'))
+            sys.stderr.write(error.args[0].encode('ascii', 'replace').decode('ascii'))
             sys.stderr.write('\n')
