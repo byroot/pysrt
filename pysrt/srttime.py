@@ -158,7 +158,14 @@ class SubRipTime(ComparableMixin):
         except ValueError:
             match = cls.RE_INTEGER.match(digits)
             if match:
-                return int(match.group())
+                try:
+                    return int(match.group())
+                except ValueError:
+                    # A leading digit run longer than sys.int_max_str_digits
+                    # (default 4300, CPython >= 3.11) makes int() raise again.
+                    # Degrade to 0 like the no-match case rather than letting a
+                    # ValueError escape the tolerant parser.
+                    return 0
             return 0
 
     @classmethod
