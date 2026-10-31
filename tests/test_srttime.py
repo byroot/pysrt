@@ -81,6 +81,22 @@ class TestTimeParsing(unittest.TestCase):
     def test_invalid_time_string(self):
         self.assertRaises(InvalidTimeString, SubRipTime.from_string, 'hello')
 
+    def test_oversized_digit_component_degrades_to_zero(self):
+        # A digit run longer than sys.int_max_str_digits (default 4300 on
+        # CPython >= 3.11) must not let a bare ValueError escape the tolerant
+        # parser; parse_int degrades it to 0 like any other unparseable run.
+        oversized = '9' * 4301
+        self.assertEqual(0, SubRipTime.parse_int(oversized))
+        time = SubRipTime.from_string('%s:00:00,000' % oversized)
+        self.assertEqual(SubRipTime(0, 0, 0, 0), time)
+
+    def test_oversized_timestamp_does_not_crash_file_parser(self):
+        import pysrt
+        src = '1\n%s:00:00,000 --> 00:00:01,000\nx\n\n' % ('9' * 4301)
+        # Default error_handling=ERROR_PASS: documented to tolerate bad content.
+        subs = pysrt.from_string(src)
+        self.assertEqual(SubRipTime(0, 0, 0, 0), subs[0].start)
+
 
 class TestCoercing(unittest.TestCase):
 
