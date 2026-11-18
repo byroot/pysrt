@@ -68,6 +68,8 @@ class SubRipFile(UserList, object):
         All arguments are optional, and should be coercible to SubRipTime
         object.
 
+        Only None omits a bound; zero-valued timestamps are applied normally.
+
         It reduce the set of subtitles to those that match match given time
         constraints.
 
@@ -80,13 +82,13 @@ class SubRipFile(UserList, object):
         """
         clone = copy(self)
 
-        if starts_before:
+        if starts_before is not None:
             clone.data = (i for i in clone.data if i.start < starts_before)
-        if starts_after:
+        if starts_after is not None:
             clone.data = (i for i in clone.data if i.start > starts_after)
-        if ends_before:
+        if ends_before is not None:
             clone.data = (i for i in clone.data if i.end < ends_before)
-        if ends_after:
+        if ends_after is not None:
             clone.data = (i for i in clone.data if i.end > ends_after)
 
         clone.data = list(clone.data)
@@ -105,7 +107,7 @@ class SubRipFile(UserList, object):
             >>> subs.at((0, 0, 20, 0)).shift(seconds=2)
             >>> subs.at(seconds=20).shift(seconds=2)
         """
-        time = timestamp or kwargs
+        time = timestamp if timestamp is not None else (kwargs or None)
         return self.slice(starts_before=time, ends_after=time)
 
     def shift(self, *args, **kwargs):

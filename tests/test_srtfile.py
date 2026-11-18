@@ -121,6 +121,66 @@ class TestSlice(unittest.TestCase):
         self.assertEqual(len(self.file.at(seconds=31)), 1)
 
 
+class TestZeroTimeSelection(unittest.TestCase):
+
+    def setUp(self):
+        self.file = SubRipFile([
+            SubRipItem(1, start=-2000, end=-1000),
+            SubRipItem(2, start=-1000, end=0),
+            SubRipItem(3, start=0, end=1000),
+            SubRipItem(4, start=1000, end=2000),
+            SubRipItem(5, start=-1000, end=1000),
+        ], path='captions.srt', encoding='utf-16', eol='\r\n')
+
+    def assert_zero_bound(self, name, expected):
+        for value in (0, {}, (), SubRipTime()):
+            selected = self.file.slice(**{name: value})
+            self.assertEqual([item.index for item in selected], expected)
+
+    def test_starts_before_zero(self):
+        self.assert_zero_bound('starts_before', [1, 2, 5])
+
+    def test_starts_after_zero(self):
+        self.assert_zero_bound('starts_after', [4])
+
+    def test_ends_before_zero(self):
+        self.assert_zero_bound('ends_before', [1])
+
+    def test_ends_after_zero(self):
+        self.assert_zero_bound('ends_after', [3, 4, 5])
+
+    def test_at_integer_zero(self):
+        self.assertEqual([item.index for item in self.file.at(0)], [5])
+
+    def test_at_empty_time_values(self):
+        for value in ({}, ()):
+            self.assertEqual([item.index for item in self.file.at(value)], [5])
+
+    def test_explicit_zero_takes_precedence_over_keywords(self):
+        selected = self.file.at(0, seconds=2)
+        self.assertEqual([item.index for item in selected], [5])
+
+    def test_omitted_bounds(self):
+        selections = (self.file.slice(), self.file.slice(starts_before=None),
+                      self.file.at(), self.file.at(None))
+        for selected in selections:
+            self.assertEqual(list(selected), list(self.file))
+
+    def test_nonzero_bounds_keep_strict_comparisons(self):
+        selected = self.file.slice(starts_before=1000, ends_after=SubRipTime())
+        self.assertEqual([item.index for item in selected], [3, 5])
+        self.assertEqual(list(self.file.at(1000)), [])
+
+    def test_selection_preserves_metadata_and_item_identity(self):
+        selected = self.file.at(SubRipTime())
+        self.assertTrue(selected is not self.file)
+        self.assertTrue(selected[0] is self.file[4])
+        self.assertEqual(selected.path, self.file.path)
+        self.assertEqual(selected.encoding, self.file.encoding)
+        self.assertEqual(selected.eol, self.file.eol)
+        self.assertEqual(len(self.file), 5)
+
+
 class TestShifting(unittest.TestCase):
 
     def test_shift(self):
