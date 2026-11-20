@@ -42,6 +42,13 @@ class TestOpen(unittest.TestCase):
         self.assertRaises(pysrt.Error, pysrt.open, self.invalid_path,
             error_handling=SubRipFile.ERROR_RAISE)
 
+    def test_leading_line_separator(self):
+        path = os.path.join(self.static_path, 'line-separator.srt')
+        subtitles = pysrt.open(path, error_handling=SubRipFile.ERROR_RAISE)
+        self.assertEqual(len(subtitles), 2)
+        self.assertEqual(subtitles[0].text, 'First line\nSecond line')
+        self.assertEqual(subtitles[1].text, 'Before\nAfter')
+
 
 class TestFromString(unittest.TestCase):
 
@@ -64,6 +71,35 @@ class TestFromString(unittest.TestCase):
         self.assertEqual(srt_file.eol, '\r\n')
         self.assertRaises(UnicodeDecodeError, pysrt.open,
             self.utf8_path, encoding='ascii')
+
+    def test_leading_line_separator(self):
+        source = u'%s00:00:01,000 --> 00:00:02,000\n%sCaption\n'
+        for index in ('1\n', ''):
+            for prefix in (u'\u2028', u'\u2028\u2028', u' \t\u2028'):
+                subtitles = pysrt.from_string(source % (index, prefix),
+                    error_handling=SubRipFile.ERROR_RAISE)
+                self.assertEqual(len(subtitles), 1)
+                self.assertEqual(subtitles[0].text, 'Caption')
+
+    def test_line_separator_between_captions(self):
+        source = (u'%s00:00:01,000 --> 00:00:02,000\nFirst\n\u2028'
+                  u'2\n00:00:03,000 --> 00:00:04,000\nSecond\n')
+        for index in ('1\n', ''):
+            subtitles = pysrt.from_string(source % index,
+                error_handling=SubRipFile.ERROR_RAISE)
+            self.assertEqual(len(subtitles), 2)
+            self.assertEqual(subtitles[0].text, 'First')
+            self.assertEqual(subtitles[1].text, 'Second')
+
+    def test_line_separator_does_not_hide_empty_line(self):
+        source = (u'1\n00:00:01,000 --> 00:00:02,000\n\u2028\n'
+                  u'2\n00:00:03,000 --> 00:00:04,000\nNext caption\n')
+        for eol in ('\n', '\r\n', '\r'):
+            subtitles = pysrt.from_string(source.replace('\n', eol),
+                error_handling=SubRipFile.ERROR_RAISE)
+            self.assertEqual(len(subtitles), 2)
+            self.assertEqual(subtitles[0].text, '')
+            self.assertEqual(subtitles[1].text, 'Next caption')
 
 
 class TestSerialization(unittest.TestCase):
@@ -100,6 +136,23 @@ class TestSerialization(unittest.TestCase):
         output_file = open(self.temp_path, 'r', encoding='windows-1252')
         output_file.read()
         self.assertEqual(output_file.newlines, '\n')
+
+    def test_line_separator_roundtrip(self):
+        path = os.path.join(self.static_path, 'line-separator.srt')
+        subtitles = pysrt.open(path, error_handling=SubRipFile.ERROR_RAISE)
+        subtitles.shift(seconds=2)
+        try:
+            subtitles.save(self.temp_path)
+            reopened = pysrt.open(self.temp_path,
+                error_handling=SubRipFile.ERROR_RAISE)
+            self.assertEqual(len(reopened), 2)
+            self.assertEqual(reopened[0].text, 'First line\nSecond line')
+            self.assertEqual(reopened[0].start, (0, 0, 3, 0))
+            self.assertEqual(reopened[0].end, (0, 0, 4, 0))
+            self.assertEqual(reopened[1].text, 'Before\nAfter')
+        finally:
+            if os.path.exists(self.temp_path):
+                os.remove(self.temp_path)
 
 
 class TestSlice(unittest.TestCase):
