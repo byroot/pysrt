@@ -202,6 +202,11 @@ class SubRipFile(UserList, object):
         """
         string_buffer = []
         for index, line in enumerate(chain(source_file, '\n')):
+            if line.endswith(u'\u2028') and not line.strip() and string_buffer:
+                # Ignore a standalone line separator only before caption text.
+                has_index = SubRipItem.TIMESTAMP_SEPARATOR not in string_buffer[0]
+                if len(string_buffer) == (2 if has_index else 1):
+                    continue
             if line.strip():
                 string_buffer.append(line)
             else:
